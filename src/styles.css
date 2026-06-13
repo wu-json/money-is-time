@@ -41,7 +41,6 @@ body {
 }
 
 /* Layout ------------------------------------------------------------------ */
-.site-header,
 .layout {
   width: 100%;
   max-width: var(--max-width);
@@ -49,43 +48,137 @@ body {
   padding-inline: 1.25rem;
 }
 
-.site-header {
-  padding-top: clamp(2rem, 6vw, 4rem);
-  padding-bottom: 1.5rem;
-  text-align: left;
+/* Hero — fullscreen, text dead-center ------------------------------------- */
+.hero {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: 100%;
+  min-height: 100svh;
+  /* 3 rows: the statement sits in the middle row → true vertical center,
+     with the quote + lead stacked just above it in the top row. */
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 1.25rem;
 }
 
-.title {
+/* Quote + "But what if", anchored to the bottom of the top row. */
+.hero-pre {
+  grid-row: 1;
+  align-self: end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.9rem, 2.2vw, 1.5rem);
+  margin-bottom: clamp(1rem, 2.6vw, 1.7rem);
+}
+
+/* Faint grid, masked to fade out toward the edges. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(10, 14, 10, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(10, 14, 10, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 75% 65% at 50% 45%,
+    #000 35%,
+    transparent 78%
+  );
+  mask-image: radial-gradient(
+    ellipse 75% 65% at 50% 45%,
+    #000 35%,
+    transparent 78%
+  );
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* One soft green glow, drifting almost imperceptibly. */
+.hero::after {
+  content: "";
+  position: absolute;
+  top: 48%;
+  left: 50%;
+  width: min(68vw, 620px);
+  aspect-ratio: 1.25;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    closest-side,
+    rgba(18, 161, 80, 0.14),
+    transparent 70%
+  );
+  filter: blur(24px);
+  z-index: -1;
+  pointer-events: none;
+  animation: drift 20s ease-in-out infinite;
+}
+
+/* Editorial pull-quote: italic serif against the bold sans headline. */
+.hero-quote {
   margin: 0;
-  font-size: clamp(2rem, 6vw, 3.25rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  animation: rise 0.7s var(--ease) both;
 }
 
-.title-line {
-  display: block;
-}
-
-.title-line--q {
+.hero-quote-text {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", "Noto Serif", serif;
+  font-style: italic;
+  font-size: clamp(1.05rem, 2.6vw, 1.45rem);
+  font-weight: 400;
   color: var(--text);
+  letter-spacing: -0.01em;
 }
 
-/* Extra breathing room before the "Money was Time?" payoff line. */
-.title-line--emph {
-  margin-top: 0.35em;
+.hero-lead {
+  margin: 0;
+  font-size: clamp(1.05rem, 2.4vw, 1.45rem);
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  animation: rise 0.7s var(--ease) 0.06s both;
+}
+
+.hero-statement {
+  grid-row: 2;
+  margin: 0;
+  font-size: clamp(2.9rem, 10vw, 6rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: var(--text);
+  animation: rise 0.8s var(--ease) 0.13s both;
 }
 
 .accent {
   color: var(--accent);
 }
 
-/* "Time" filled with a money-green gradient. */
-.gradient-text {
-  background: linear-gradient(100deg, #1ec46b 0%, var(--accent) 45%, #0a6e36 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translate(-3%, -2%);
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(3%, 2%);
+  }
 }
 
 .layout {
