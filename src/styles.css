@@ -53,6 +53,64 @@ body {
   padding-top: clamp(2rem, 6vw, 4rem);
   padding-bottom: 1.5rem;
   text-align: left;
+  display: grid;
+  grid-template-columns: 1.1fr 1fr;
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+}
+
+@media (max-width: 640px) {
+  .site-header {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Stylized "time note": a dollar bill with a clock as the portrait. */
+.site-header__art {
+  display: flex;
+  justify-content: center;
+}
+
+.dollar-bill {
+  width: 100%;
+  max-width: 420px;
+  height: auto;
+  transform: rotate(-4deg);
+  filter: drop-shadow(0 14px 28px rgba(10, 30, 18, 0.16));
+  animation: bill-float 6s var(--ease) infinite;
+}
+
+.bill-text {
+  fill: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-anchor: middle;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.bill-corner circle {
+  fill: #ffffff;
+  stroke: var(--accent);
+  stroke-width: 1.6;
+}
+
+.bill-corner text {
+  fill: var(--accent);
+  font-size: 16px;
+  font-weight: 800;
+  text-anchor: middle;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes bill-float {
+  0%,
+  100% {
+    transform: rotate(-4deg) translateY(0);
+  }
+  50% {
+    transform: rotate(-4deg) translateY(-8px);
+  }
 }
 
 .title {
