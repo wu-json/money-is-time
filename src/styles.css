@@ -1,0 +1,155 @@
+/* Color + spacing tokens. White page, black text, a single money-green accent. */
+:root {
+  --bg: #ffffff;
+  --bg-panel: #ffffff;
+  --bg-elevated: #f5f7f5;
+  --border: #e3e7e3;
+  --text: #0a0e0a;
+  --text-muted: #6b746b;
+  --accent: #12a150; /* money green */
+  --accent-soft: #12a15014;
+
+  --radius: 14px;
+  --gap: 1rem;
+  --max-width: 880px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --dur: 240ms;
+
+  color-scheme: light;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+/* Layout ------------------------------------------------------------------ */
+.site-header,
+.layout {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.site-header {
+  padding-top: clamp(2rem, 6vw, 4rem);
+  padding-bottom: 1.5rem;
+  text-align: left;
+}
+
+.title {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.title-line {
+  display: block;
+}
+
+.title-line--q {
+  color: var(--text);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+/* Green dot on the question mark.
+ * Two stacked "?" glyphs: a black base, plus a green copy clipped to just its
+ * bottom (the dot). line-height:1 hugs the glyph box so the clip is predictable;
+ * tune the inset top if a font shifts the dot. The green overlay is decorative
+ * (aria-hidden); the base "?" carries the real punctuation for screen readers. */
+.qmark {
+  position: relative;
+  display: inline-block;
+  line-height: 1;
+}
+
+.qmark-base {
+  color: var(--text);
+}
+
+.qmark-dot {
+  position: absolute;
+  inset: 0;
+  color: var(--accent);
+  clip-path: inset(68% 0 0 0);
+  pointer-events: none;
+}
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding-bottom: 3rem;
+}
+
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--gap);
+}
+
+/* Empty mount points render nothing until their phase fills them in. */
+.panel:empty,
+.grid:empty {
+  display: none;
+}
+
+/* Utility transition classes (used by later phases for tweened/animated UI). */
+.fade-in {
+  animation: fade-in var(--dur) var(--ease) both;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
