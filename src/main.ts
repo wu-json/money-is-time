@@ -6,6 +6,7 @@ import { salaryInput } from "./components/salaryInput";
 import { scheduleSelector } from "./components/scheduleSelector";
 import { itemsSection } from "./components/itemsSection";
 import { monthlySection } from "./components/monthlySection";
+import { comparisonSection } from "./components/comparisonSection";
 import { dock } from "./components/dock";
 
 function mountControls(): void {
@@ -30,6 +31,12 @@ function mountMonthly(): void {
   const monthly = document.querySelector<HTMLElement>("#monthly");
   if (!monthly) return;
   monthly.append(monthlySection());
+}
+
+function mountComparison(): void {
+  const comparison = document.querySelector<HTMLElement>("#comparison");
+  if (!comparison) return;
+  comparison.append(comparisonSection());
 }
 
 // Fade each card up as it scrolls into view. Done before first paint (the class
@@ -57,4 +64,5 @@ function revealOnScroll(root: HTMLElement): void {
 mountControls();
 mountItems();
 mountMonthly();
+mountComparison();
 document.body.append(dock());

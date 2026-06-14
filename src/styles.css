@@ -1181,6 +1181,178 @@ body {
   }
 }
 
+/* Whose hour is worth more — the comparison ===============================*/
+.compare {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+/* Selector — soft pills that wrap; choosing one washes it in the green. */
+.compare-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.compare-chip {
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.compare-chip:hover {
+  background: var(--sink);
+}
+
+.compare-chip.is-active {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+.compare-card {
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  padding: clamp(1.6rem, 4vw, 2.4rem);
+}
+
+/* Two rates, face to face, an italic "vs" holding the gap between them. */
+.compare-rates {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 3vw, 1.5rem);
+}
+
+.compare-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.compare-side.is-them {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.compare-side-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.compare-side-rate {
+  font-family: var(--font-sans);
+  font-size: clamp(1.5rem, 5vw, 2rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.compare-side-cap {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.compare-vs {
+  align-self: center;
+  flex: none;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--faint);
+  padding-top: 0.9rem;
+}
+
+/* Verdict — the gap, spoken plainly and then in hours. */
+.compare-verdict {
+  margin-top: clamp(1.5rem, 4vw, 2.1rem);
+  padding-top: clamp(1.5rem, 4vw, 2.1rem);
+  border-top: 1px solid var(--hairline);
+  text-align: center;
+}
+
+.compare-lead {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  color: var(--ink-2);
+}
+
+.compare-verdict.is-empty .compare-lead {
+  color: var(--muted);
+}
+
+.compare-mult {
+  margin: 0.35rem 0 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  color: var(--accent-ink);
+  line-height: 1;
+}
+
+.compare-mult.is-hidden,
+.compare-sub.is-hidden {
+  display: none;
+}
+
+.compare-mult-value {
+  font-family: var(--font-sans);
+  font-size: clamp(3.2rem, 13vw, 5.25rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  font-variant-numeric: tabular-nums;
+}
+
+.compare-mult-x {
+  font-size: 0.42em;
+  font-weight: 600;
+  margin-left: 0.12em;
+  align-self: center;
+}
+
+.compare-sub {
+  margin: 1rem auto 0;
+  max-width: 44ch;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.compare-sub b {
+  color: var(--accent-ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 460px) {
+  .compare-side-cap {
+    font-size: 0.7rem;
+  }
+}
+
 /* Floating dock — income + schedule, always within reach ==================
    A small sheet of paper that follows you down the page. Composed for
    stillness: a generous interval (ma) between every element, quiet hairlines
