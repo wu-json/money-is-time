@@ -38,6 +38,10 @@ const KEY = `<svg viewBox="0 0 24 24" ${stroke}><circle cx="8.5" cy="8.5" r="4.5
 const LAPTOP = `<svg viewBox="0 0 24 24" ${stroke}><rect x="4" y="4.5" width="16" height="11" rx="1.5"/><path d="M2.5 19h19"/></svg>`;
 const DUMBBELL = `<svg viewBox="0 0 24 24" ${stroke}><path d="M4 7v10M7 9v6M17 9v6M20 7v10M7 12h10"/></svg>`;
 const PLANE = `<svg viewBox="0 0 24 24" ${stroke}><path d="M17.8 19.2 16 11l3.5-3.5a2.12 2.12 0 0 0-3-3L13 8 4.8 6.2a1 1 0 0 0-.9 1.7l5.6 3.2-2.8 2.8H4.5a.8.8 0 0 0-.5 1.4l3 2 2 3a.8.8 0 0 0 1.4-.5v-2.2l2.8-2.8 3.2 5.6a1 1 0 0 0 1.7-.9z"/></svg>`;
+const BOBA = `<svg viewBox="0 0 24 24" ${stroke}><path d="M7 8h10l-1 12a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1z"/><path d="M5.5 8h13"/><path d="M13 8l3-4.5"/><circle cx="10" cy="17.5" r=".6"/><circle cx="13" cy="18.5" r=".6"/><circle cx="11.6" cy="15.2" r=".6"/></svg>`;
+const BEER = `<svg viewBox="0 0 24 24" ${stroke}><path d="M6 7h9v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2z"/><path d="M15 9h2.5A1.5 1.5 0 0 1 19 10.5v3A1.5 1.5 0 0 1 17.5 15H15"/><path d="M6 10h9"/></svg>`;
+const LIPSTICK = `<svg viewBox="0 0 24 24" ${stroke}><rect x="8.5" y="12" width="7" height="9" rx="1"/><path d="M9.5 12V8l3.5-4 2 1.5V12"/></svg>`;
+const TICKET = `<svg viewBox="0 0 24 24" ${stroke}><path d="M3 8h18v3a1.8 1.8 0 0 0 0 4v3H3v-3a1.8 1.8 0 0 0 0-4z"/><path d="M14.5 8v1M14.5 12v1.5M14.5 16v1"/></svg>`;
 
 export const ITEMS: Item[] = [
   {
@@ -48,6 +52,24 @@ export const ITEMS: Item[] = [
     priceUsd: 6.25,
     icon: CUP,
     variant: "ribbon",
+  },
+  {
+    id: "boba",
+    prompt: "Boba run?",
+    name: "Brown sugar milk tea",
+    place: "large, extra pearls",
+    priceUsd: 6.75,
+    icon: BOBA,
+    variant: "card",
+  },
+  {
+    id: "beer",
+    prompt: "One after work.",
+    name: "Pint of IPA",
+    place: "a SF bar",
+    priceUsd: 10,
+    icon: BEER,
+    variant: "card",
   },
   {
     id: "brunch",
@@ -69,10 +91,29 @@ export const ITEMS: Item[] = [
     variant: "card",
   },
   {
+    id: "lipstick",
+    prompt: "A little treat.",
+    name: "Designer lipstick",
+    place: "Charlotte Tilbury",
+    priceUsd: 38,
+    icon: LIPSTICK,
+    variant: "card",
+  },
+  {
+    id: "concert",
+    prompt: "They're in town!",
+    name: "Concert ticket",
+    place: "one night, plus fees",
+    priceUsd: 95,
+    icon: TICKET,
+    note: "Service fees not included. They never are.",
+    variant: "card",
+  },
+  {
     id: "iphone",
     prompt: "Gotta have the new one.",
-    name: "iPhone 16 Pro",
-    place: "this year's model",
+    name: "Latest iPhone model",
+    place: "top of the line",
     priceUsd: 999,
     icon: PHONE,
     variant: "card",
@@ -111,7 +152,7 @@ export const ITEMS: Item[] = [
     prompt: "Need a break.",
     name: "Round-trip flight to Japan",
     place: "SFO → Tokyo, economy",
-    priceUsd: 1200,
+    priceUsd: 1600,
     icon: PLANE,
     variant: "card",
   },
