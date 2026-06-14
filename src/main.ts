@@ -6,6 +6,7 @@ import { salaryInput } from "./components/salaryInput";
 import { scheduleSelector } from "./components/scheduleSelector";
 import { itemsSection } from "./components/itemsSection";
 import { monthlySection } from "./components/monthlySection";
+import { dock } from "./components/dock";
 
 function mountControls(): void {
   const controls = document.querySelector<HTMLElement>("#controls");
@@ -56,3 +57,4 @@ function revealOnScroll(root: HTMLElement): void {
 mountControls();
 mountItems();
 mountMonthly();
+document.body.append(dock());

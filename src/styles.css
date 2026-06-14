@@ -1181,6 +1181,210 @@ body {
   }
 }
 
+/* Floating dock — income + schedule, always within reach ================== */
+.dock {
+  position: fixed;
+  right: clamp(1rem, 3vw, 1.75rem);
+  bottom: clamp(1rem, 3vw, 1.75rem);
+  z-index: 50;
+  width: 300px;
+  max-width: calc(100vw - 2rem);
+  background: var(--paper);
+  border: 1px solid var(--hairline-2);
+  border-radius: var(--radius);
+  /* A floating layer earns a soft lift — the one place shadow reads as depth,
+     not decoration. */
+  box-shadow:
+    0 1px 2px rgba(26, 25, 23, 0.06),
+    0 10px 30px rgba(26, 25, 23, 0.12);
+  overflow: hidden;
+  font-family: var(--font-sans);
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+/* Tucked away while the top controls are on screen. */
+.dock.is-hidden {
+  opacity: 0;
+  transform: translateY(14px) scale(0.98);
+  pointer-events: none;
+}
+
+.dock-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+  transition: background var(--dur) var(--ease);
+}
+
+.dock-toggle:hover {
+  background: var(--sink);
+}
+
+.dock-mark {
+  display: flex;
+  flex: none;
+  color: var(--accent-ink);
+}
+
+.dock-mark svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+}
+
+.dock-summary {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+}
+
+.dock-income {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.dock-sched {
+  font-size: 0.76rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.dock-chevron {
+  display: flex;
+  flex: none;
+  color: var(--faint);
+  transition: transform var(--dur) var(--ease);
+}
+
+.dock-chevron svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.dock.is-open .dock-chevron {
+  transform: rotate(180deg);
+}
+
+/* The editor unfolds via the 0fr→1fr grid-rows trick (animatable height). */
+.dock-editor-wrap {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur) var(--ease);
+}
+
+.dock.is-open .dock-editor-wrap {
+  grid-template-rows: 1fr;
+}
+
+.dock-editor {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.dock-editor-pad {
+  padding: 0.4rem 1rem 1.15rem;
+  border-top: 1px solid var(--hairline);
+}
+
+.dock-flabel {
+  display: block;
+  margin: 1rem 0 0.55rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.dock-editor-pad .field-control {
+  border-bottom-width: 1.5px;
+}
+
+.dock-editor-pad .field-input {
+  font-size: 1.3rem;
+}
+
+/* The income "$" leads the figure; the hours "hrs / week" trails it — both set
+   by DOM order, so only their sizes differ here. */
+.dock-income-control .field-suffix {
+  font-size: 1.1rem;
+}
+
+.dock-hours-control .field-suffix {
+  font-size: 0.85rem;
+}
+
+.dock-slider {
+  margin-top: 0.5rem;
+}
+
+.dock-chips {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+  margin-bottom: 0.9rem;
+}
+
+.dock-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.5rem 0.55rem;
+  border: 1px solid var(--hairline);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.dock-chip:hover {
+  background: var(--sink);
+}
+
+.dock-chip.is-active {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--accent-ink);
+}
+
+.dock-chip-h {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.dock-chip-l {
+  font-size: 0.64rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.dock-chip.is-active .dock-chip-l {
+  color: var(--accent-ink);
+  opacity: 0.8;
+}
+
 /* Utilities ---------------------------------------------------------------- */
 .fade-in {
   animation: fade-in var(--dur) var(--ease) both;
