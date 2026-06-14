@@ -12,7 +12,7 @@ function mountControls(): void {
   const form = el("form", "controls-form");
   form.addEventListener("submit", (e) => e.preventDefault());
 
-  form.append(salaryInput(), scheduleSelector());
+  form.append(salaryInput(), el("hr", "control-divider"), scheduleSelector());
   controls.append(form);
 }
 

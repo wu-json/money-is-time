@@ -10,13 +10,3 @@ export function hourlyWage(annualSalary: number, hoursPerWeek: number): number {
   if (annualSalary <= 0 || hoursPerWeek <= 0) return 0;
   return annualSalary / (hoursPerWeek * WEEKS_PER_YEAR);
 }
-
-// Length of a *working* day in hours — a 996 day is 12h, a 9-to-5 day is 8h.
-// This is what makes the schedule presets meaningfully change the output.
-export function workHoursPerDay(
-  hoursPerWeek: number,
-  daysPerWeek: number,
-): number {
-  if (hoursPerWeek <= 0 || daysPerWeek <= 0) return 0;
-  return hoursPerWeek / daysPerWeek;
-}
