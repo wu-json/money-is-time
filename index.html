@@ -11,7 +11,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,900;1,9..144,400&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="./src/styles.css" />
@@ -19,12 +19,80 @@
   <body>
     <header class="hero">
       <div class="hero-pre">
-        <figure class="hero-quote">
-          <blockquote class="hero-quote-text">&ldquo;Time is money.&rdquo;</blockquote>
-        </figure>
-        <p class="hero-lead">But what if&hellip;</p>
+        <blockquote class="hero-quote-text">&ldquo;Time is money.&rdquo;</blockquote>
       </div>
-      <h1 class="hero-statement">Money is Time</h1>
+      <div class="hero-main">
+        <div class="hero-mark" aria-hidden="true">
+          <svg
+            class="clock"
+            viewBox="0 0 240 240"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient
+                id="trail"
+                gradientUnits="userSpaceOnUse"
+                x1="38"
+                y1="92"
+                x2="120"
+                y2="34"
+              >
+                <stop offset="0" stop-color="#12a150" stop-opacity="0" />
+                <stop offset="1" stop-color="#12a150" stop-opacity="0.6" />
+              </linearGradient>
+            </defs>
+
+            <!-- coin edge: the face reads as a coin -->
+            <circle class="clock-rim" cx="120" cy="120" r="104" />
+            <circle class="clock-rim-inner" cx="120" cy="120" r="95" />
+
+            <!-- hour index marks, watch-style -->
+            <g class="clock-ticks">
+              <line class="tick-major" x1="120" y1="29" x2="120" y2="43" />
+              <line class="tick-major" x1="211" y1="120" x2="197" y2="120" />
+              <line class="tick-major" x1="120" y1="211" x2="120" y2="197" />
+              <line class="tick-major" x1="29" y1="120" x2="43" y2="120" />
+              <line class="tick" x1="166" y1="40" x2="161" y2="49" />
+              <line class="tick" x1="200" y1="74" x2="191" y2="79" />
+              <line class="tick" x1="200" y1="166" x2="191" y2="161" />
+              <line class="tick" x1="166" y1="200" x2="161" y2="191" />
+              <line class="tick" x1="74" y1="200" x2="79" y2="191" />
+              <line class="tick" x1="40" y1="166" x2="49" y2="161" />
+              <line class="tick" x1="40" y1="74" x2="49" y2="79" />
+              <line class="tick" x1="74" y1="40" x2="79" y2="49" />
+            </g>
+
+            <!-- hour + minute hands, resting at 10:10 -->
+            <g class="clock-hands">
+              <line class="hand-hour" x1="120" y1="120" x2="78" y2="96" />
+              <line class="hand-minute" x1="120" y1="120" x2="179" y2="86" />
+            </g>
+
+            <!-- the sweeping group: comet trail, second hand, the $ coin -->
+            <g class="clock-second">
+              <path
+                class="clock-trail"
+                d="M38 92 A 90 90 0 0 1 120 34"
+                stroke="url(#trail)"
+              />
+              <line class="hand-second" x1="120" y1="138" x2="120" y2="34" />
+              <g class="clock-coin" transform="translate(120 34)">
+                <circle class="coin-body" r="14" />
+                <text class="coin-symbol" x="0" y="6" text-anchor="middle">
+                  $
+                </text>
+              </g>
+            </g>
+
+            <!-- center hub -->
+            <circle class="clock-hub" cx="120" cy="120" r="7" />
+            <circle class="clock-hub-dot" cx="120" cy="120" r="3" />
+          </svg>
+        </div>
+
+        <h1 class="hero-statement">Money is <span class="accent">Time</span></h1>
+      </div>
       <a class="hero-scroll" href="#controls" aria-label="Scroll down">
         <span class="hero-scroll-arrow" aria-hidden="true"></span>
       </a>

@@ -34,8 +34,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family:
-    "Zen Kaku Gothic New", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
-    Roboto, Helvetica, Arial, sans-serif;
+    "Fraunces", Georgia, "Times New Roman", "Noto Serif", serif;
+  font-optical-sizing: auto;
   line-height: 1.5;
   min-height: 100dvh;
 }
@@ -64,15 +64,24 @@ body {
   padding: 2rem 1.25rem;
 }
 
-/* Quote + kicker, anchored to the bottom of the top row. */
+/* Setup quote, anchored to the bottom of the top row. */
 .hero-pre {
   grid-row: 1;
   align-self: end;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.9rem, 2.2vw, 1.5rem);
-  margin-bottom: clamp(1rem, 2.6vw, 1.7rem);
+  gap: clamp(0.5rem, 1.4vw, 0.85rem);
+  margin-bottom: clamp(1.5rem, 3.2vw, 2.4rem);
+}
+
+/* The mark + statement, the focal block — dead center. */
+.hero-main {
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.1rem, 2.6vw, 1.6rem);
 }
 
 /* Scroll cue — anchors the lower third and signals "this is a tool". */
@@ -118,80 +127,151 @@ body {
   }
 }
 
-/* Tiled checkerboard of clocks (dark) and coins (green), faded at the edges. */
-.hero::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: url("./pattern.svg");
-  background-size: 140px 140px;
-  -webkit-mask-image: radial-gradient(
-    ellipse 80% 72% at 50% 46%,
-    #000 28%,
-    transparent 82%
-  );
-  mask-image: radial-gradient(
-    ellipse 80% 72% at 50% 46%,
-    #000 28%,
-    transparent 82%
-  );
-  z-index: -2;
-  pointer-events: none;
-}
-
-/* One soft green glow, drifting almost imperceptibly. */
+/* One clean green wash behind the mark — soft, layered, no muddy blur. */
 .hero::after {
   content: "";
   position: absolute;
-  top: 48%;
+  top: 44%;
   left: 50%;
-  width: min(68vw, 620px);
-  aspect-ratio: 1.25;
+  width: min(82vw, 760px);
+  aspect-ratio: 1;
   transform: translate(-50%, -50%);
   background: radial-gradient(
     closest-side,
     rgba(18, 161, 80, 0.14),
-    transparent 70%
+    rgba(18, 161, 80, 0.04) 46%,
+    transparent 72%
   );
-  filter: blur(24px);
   z-index: -1;
   pointer-events: none;
-  animation: drift 20s ease-in-out infinite;
+  animation: drift 22s ease-in-out infinite;
 }
 
-/* Editorial pull-quote: italic serif against the bold sans headline. */
-.hero-quote {
-  margin: 0;
-  animation: rise 0.7s var(--ease) both;
+/* ---- The mark: a coin that is also a clock --------------------------------- */
+.hero-mark {
+  width: clamp(132px, 18vw, 196px);
+  margin-bottom: clamp(0.4rem, 1.4vw, 0.9rem);
+  animation: mark-in 1s var(--ease) both;
 }
 
+.clock {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+/* Coin edge — thin double rim. */
+.clock-rim {
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.clock-rim-inner {
+  stroke: #eef1ee;
+  stroke-width: 1.5;
+}
+
+/* Index marks. */
+.clock-ticks .tick {
+  stroke: #c4ccc4;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+.clock-ticks .tick-major {
+  stroke: var(--text);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+/* Hour + minute hands. */
+.hand-hour {
+  stroke: var(--text);
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+
+.hand-minute {
+  stroke: var(--text);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+/* The sweeping second hand carries the $ coin around the dial. */
+.clock-second {
+  transform-box: view-box;
+  transform-origin: 120px 120px;
+  animation: sweep 7s linear infinite;
+}
+
+.hand-second {
+  stroke: var(--accent);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+.clock-trail {
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+
+.coin-body {
+  fill: var(--accent);
+  filter: drop-shadow(0 3px 8px rgba(18, 161, 80, 0.4));
+}
+
+.coin-symbol {
+  fill: #fff;
+  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.clock-hub {
+  fill: var(--bg);
+  stroke: var(--text);
+  stroke-width: 2.5;
+}
+
+.clock-hub-dot {
+  fill: var(--accent);
+}
+
+@keyframes sweep {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mark-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Editorial pull-quote: italic serif, the setup line. */
 .hero-quote-text {
   margin: 0;
-  font-family: Georgia, "Times New Roman", "Noto Serif", serif;
   font-style: italic;
-  font-size: clamp(1.05rem, 2.6vw, 1.45rem);
+  font-size: clamp(1.15rem, 2.8vw, 1.6rem);
   font-weight: 400;
   color: var(--text);
   letter-spacing: -0.01em;
-}
-
-.hero-lead {
-  margin: 0;
-  font-size: clamp(1.05rem, 2.4vw, 1.45rem);
-  font-weight: 400;
-  color: var(--text-muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  animation: rise 0.7s var(--ease) 0.06s both;
+  animation: rise 0.7s var(--ease) both;
 }
 
 .hero-statement {
-  grid-row: 2;
   margin: 0;
-  font-size: clamp(2.9rem, 10vw, 6rem);
+  font-size: clamp(3rem, 10.5vw, 6.5rem);
   font-weight: 900;
   line-height: 1;
-  letter-spacing: -0.035em;
+  letter-spacing: -0.025em;
   color: var(--text);
   animation: rise 0.8s var(--ease) 0.13s both;
 }
