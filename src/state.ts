@@ -3,7 +3,7 @@
 // computeds, so a single edit fans out automatically (see ./store.ts).
 
 import { signal, computed, type Signal, type ReadSignal } from "./store";
-import { hourlyWage } from "./calc";
+import { hourlyWage, federalIncomeTax, californiaIncomeTax } from "./calc";
 
 export type PresetId = "9to5" | "996" | "9127" | "custom";
 
@@ -20,8 +20,23 @@ export const schedule: Signal<Schedule> = signal<Schedule>({
   presetId: "9to5",
 });
 
-// Derived rate — the bridge from "what you entered" to "what a good costs in
-// time." Phase 3's item cards read this.
+// Gross rate — dollars earned per hour worked, before tax. The tax card reads
+// this (time worked *to pay* taxes is measured against gross pay).
 export const hourlyWageUsd: ReadSignal<number> = computed(() =>
   hourlyWage(salary(), schedule().hoursPerWeek),
+);
+
+// Annual take-home after federal + California income tax (never below 0).
+export const netSalaryUsd: ReadSignal<number> = computed(() => {
+  const gross = salary();
+  if (gross <= 0) return 0;
+  const tax = federalIncomeTax(gross) + californiaIncomeTax(gross);
+  return Math.max(0, gross - tax);
+});
+
+// Net rate — take-home dollars per hour worked. Goods are bought with after-tax
+// money, so this (not the gross wage) is what the item cards convert against:
+// price ÷ netHourlyWage = the hours you must actually work to afford it.
+export const netHourlyWageUsd: ReadSignal<number> = computed(() =>
+  hourlyWage(netSalaryUsd(), schedule().hoursPerWeek),
 );

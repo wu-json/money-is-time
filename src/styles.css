@@ -574,6 +574,14 @@ body {
   color: var(--ink);
 }
 
+.items-note {
+  margin: 0.9rem 0 0;
+  max-width: 44ch;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
 /* Shared atoms ------------------------------------------------------------- */
 .item {
   position: relative;

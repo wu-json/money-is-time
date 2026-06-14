@@ -6,7 +6,7 @@
 import { el } from "../dom";
 import { effect } from "../store";
 import { tweenNumber } from "../tween";
-import { hourlyWageUsd, salary, schedule } from "../state";
+import { hourlyWageUsd, netHourlyWageUsd, salary, schedule } from "../state";
 import { federalIncomeTax, californiaIncomeTax } from "../calc";
 import { timeParts, money, type TimePart } from "../format";
 import { ITEMS, type Item } from "../data/items";
@@ -132,7 +132,7 @@ function feature(item: Item): Built {
     }
     const ratio = Math.min(1, info.minutes / perMonth);
     fill.style.width = `${(ratio * 100).toFixed(1)}%`;
-    barLabel.textContent = `${Math.round(ratio * 100)}% of everything you earn this month`;
+    barLabel.textContent = `${Math.round(ratio * 100)}% of your take-home this month`;
   };
   return { node, update };
 }
@@ -284,14 +284,14 @@ function wire(price: number, render: (info: TimeInfo) => void): void {
   let shown = 0;
   let cancel: () => void = () => {};
   effect(() => {
-    const wage = hourlyWageUsd();
+    const wage = netHourlyWageUsd();
     const hpw = schedule().hoursPerWeek;
     cancel();
     if (wage <= 0) {
       render(null);
       return;
     }
-    const target = (price / wage) * 60; // minutes of labor
+    const target = (price / wage) * 60; // minutes of labor (after-tax wage)
     if (reduceMotion) {
       shown = target;
       render({ parts: timeParts(target, hpw), minutes: target });
@@ -313,6 +313,11 @@ export function itemsSection(): HTMLElement {
       "items-intro",
       el("p", "items-eyebrow", "Same prices, told in time"),
       el("h2", "items-title", "So… what can you actually afford?"),
+      el(
+        "p",
+        "items-note",
+        "Counted in take-home pay — the hours you'd work after federal and California income tax.",
+      ),
     ),
   );
 
