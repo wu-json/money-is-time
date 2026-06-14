@@ -314,15 +314,54 @@ body {
   color: var(--muted);
 }
 
-/* Salary ------------------------------------------------------------------- */
-.slider-value {
-  display: block;
+/* Salary — the headline figure doubles as an editable text field ----------- */
+.salary-value {
+  display: inline-flex;
+  align-items: baseline;
+  position: relative;
+  max-width: 100%;
   font-family: var(--font-display);
   font-size: clamp(2.5rem, 8vw, 3.5rem);
   font-weight: 400;
   letter-spacing: -0.03em;
   line-height: 1;
   color: var(--ink);
+  cursor: text;
+}
+
+.salary-currency {
+  color: var(--muted);
+  margin-right: 0.04em;
+}
+
+/* Off-layout mirror used only to measure the input's natural width. */
+.salary-sizer {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.salary-input {
+  min-width: 1ch;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  transition: border-color var(--dur) var(--ease);
+}
+
+/* Hairline on hover, accent on focus — the only hints that it's editable. */
+.salary-value:hover .salary-input {
+  border-color: var(--hairline-2);
+}
+
+.salary-input:focus {
+  border-color: var(--accent);
 }
 
 .slider {
