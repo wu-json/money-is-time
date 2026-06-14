@@ -12,8 +12,8 @@ export type Schedule = {
   presetId: PresetId;
 };
 
-// First-paint defaults: a $150k earner on a 9-to-5.
-export const salary: Signal<number> = signal(150_000);
+// First-paint defaults: an $85k earner on a 9-to-5.
+export const salary: Signal<number> = signal(85_000);
 
 export const schedule: Signal<Schedule> = signal<Schedule>({
   hoursPerWeek: 40,
