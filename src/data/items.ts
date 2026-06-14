@@ -61,7 +61,7 @@ export const ITEMS: Item[] = [
   {
     id: "doordash",
     prompt: "Actually, let's just DoorDash.",
-    name: "Dinner, delivered",
+    name: "Brunch, delivered",
     place: "DoorDash",
     priceUsd: 35,
     icon: BAG,
