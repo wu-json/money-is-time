@@ -31,6 +31,8 @@ const BAG = `<svg viewBox="0 0 24 24" ${stroke}><path d="M6 8h12l-1 12H7z"/><pat
 const HOUSE = `<svg viewBox="0 0 24 24" ${stroke}><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/><path d="M10 20v-6h4v6"/></svg>`;
 const CAR = `<svg viewBox="0 0 24 24" ${stroke}><path d="M5 13l1.6-4.6A2 2 0 0 1 8.5 7h7a2 2 0 0 1 1.9 1.4L19 13"/><path d="M3 13h18v4H3z"/><circle cx="7.5" cy="17.5" r="1.4"/><circle cx="16.5" cy="17.5" r="1.4"/></svg>`;
 const RECEIPT = `<svg viewBox="0 0 24 24" ${stroke}><path d="M6 2.5h12v19l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4-2 1.4z"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>`;
+const WHEEL = `<svg viewBox="0 0 24 24" ${stroke}><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="2.3"/><path d="M12 9.7V4M10.1 13.6 5.2 17M13.9 13.6 18.8 17"/></svg>`;
+const TRAIN = `<svg viewBox="0 0 24 24" ${stroke}><rect x="6" y="3.5" width="12" height="13" rx="2.5"/><path d="M6 11h12"/><path d="M9.5 14.2h.01M14.5 14.2h.01"/><path d="M8.5 16.5 6.5 20M15.5 16.5 17.5 20"/></svg>`;
 const PHONE = `<svg viewBox="0 0 24 24" ${stroke}><rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M10.5 18.5h3"/></svg>`;
 const RING = `<svg viewBox="0 0 24 24" ${stroke}><path d="M9 7.5 12 4l3 3.5-3 3z"/><circle cx="12" cy="15" r="5.5"/></svg>`;
 const STROLLER = `<svg viewBox="0 0 24 24" ${stroke}><path d="M4 11a8 8 0 0 1 8-8v8z"/><path d="M4 11h16v2a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><circle cx="8.5" cy="20" r="1.4"/><circle cx="15.5" cy="20" r="1.4"/></svg>`;
@@ -69,6 +71,26 @@ export const ITEMS: Item[] = [
     place: "a SF bar",
     priceUsd: 10,
     icon: BEER,
+    variant: "card",
+  },
+  {
+    id: "muni",
+    prompt: "Off to work.",
+    name: "Muni, round-trip",
+    place: "the daily commute",
+    priceUsd: 5.5,
+    icon: TRAIN,
+    note: "Two rides on a Clipper card — across town and back.",
+    variant: "card",
+  },
+  {
+    id: "waymo",
+    prompt: "Or skip the train.",
+    name: "The same commute, by Waymo",
+    place: "round-trip, no driver",
+    priceUsd: 36,
+    icon: WHEEL,
+    note: "Same trip, ~6× the fare — and no one to tip.",
     variant: "card",
   },
   {
@@ -176,7 +198,7 @@ export const ITEMS: Item[] = [
   },
   {
     id: "car",
-    prompt: "Treat yourself.",
+    prompt: "Invest in the ride.",
     name: "Mazda CX-30",
     place: "new, off the lot",
     priceUsd: 26000,
