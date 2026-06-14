@@ -195,7 +195,7 @@ export const ITEMS: Item[] = [
   },
   {
     id: "home",
-    prompt: "The dream.",
+    prompt: "The American Dream.",
     name: "Median San Francisco home",
     place: "just the sticker price",
     priceUsd: 1300000,
@@ -205,7 +205,7 @@ export const ITEMS: Item[] = [
   },
   {
     id: "home-south",
-    prompt: "The Southern dream.",
+    prompt: "The American Dream (in the South).",
     name: "The same house, down South",
     place: "a 3-bed in Tennessee",
     priceUsd: 340000,
