@@ -33,8 +33,6 @@ function clampHours(value: number): number {
   return Math.min(Math.round(value), HOURS_IN_WEEK);
 }
 
-const CLOCK =
-  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>';
 const CHEVRON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
 
@@ -54,7 +52,6 @@ export function dock(): HTMLElement {
   const toggle = el(
     "button",
     "dock-toggle",
-    glyph("dock-mark", CLOCK),
     el("span", "dock-summary", sumIncome, sumSched),
     glyph("dock-chevron", CHEVRON),
   ) as HTMLButtonElement;

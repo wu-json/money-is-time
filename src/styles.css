@@ -1181,42 +1181,56 @@ body {
   }
 }
 
-/* Floating dock — income + schedule, always within reach ================== */
+/* Floating dock — income + schedule, always within reach ==================
+   A small sheet of paper that follows you down the page. Composed for
+   stillness: a generous interval (ma) between every element, quiet hairlines
+   where most UIs would draw boxes (kanso), one warm, low lift instead of a hard
+   edge (shibui), and a clock whose hand keeps a slow, living time (seijaku).
+   The display serif carries the figure; everything else recedes around it. */
 .dock {
   position: fixed;
-  right: clamp(1rem, 3vw, 1.75rem);
-  bottom: clamp(1rem, 3vw, 1.75rem);
+  right: clamp(1rem, 3vw, 2rem);
+  bottom: clamp(1rem, 3vw, 2rem);
   z-index: 50;
-  width: 300px;
+  /* Collapsed, the dock hugs its summary (no dead space); opening lets the
+     editor width below it expand the card out to a comfortable panel. */
+  width: max-content;
   max-width: calc(100vw - 2rem);
   background: var(--paper);
-  border: 1px solid var(--hairline-2);
-  border-radius: var(--radius);
-  /* A floating layer earns a soft lift — the one place shadow reads as depth,
-     not decoration. */
+  border: 1px solid var(--hairline);
+  border-radius: 16px;
+  /* A floating layer earns one warm, diffuse lift — the single place a shadow
+     reads as depth, not decoration. Tinted with the ink, never neutral grey. */
   box-shadow:
-    0 1px 2px rgba(26, 25, 23, 0.06),
-    0 10px 30px rgba(26, 25, 23, 0.12);
+    0 1px 1px rgba(26, 25, 23, 0.04),
+    0 14px 44px -16px rgba(26, 25, 23, 0.24);
   overflow: hidden;
   font-family: var(--font-sans);
   transition:
-    opacity var(--dur) var(--ease),
-    transform var(--dur) var(--ease);
+    opacity 0.5s var(--ease),
+    transform 0.5s var(--ease),
+    box-shadow 0.4s var(--ease);
 }
 
-/* Tucked away while the top controls are on screen. */
+.dock:hover {
+  box-shadow:
+    0 1px 1px rgba(26, 25, 23, 0.05),
+    0 20px 56px -16px rgba(26, 25, 23, 0.28);
+}
+
+/* Tucked away while the top controls are on screen — it rises into place. */
 .dock.is-hidden {
   opacity: 0;
-  transform: translateY(14px) scale(0.98);
+  transform: translateY(18px) scale(0.985);
   pointer-events: none;
 }
 
 .dock-toggle {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 0.9rem;
   background: transparent;
   border: 0;
   cursor: pointer;
@@ -1226,19 +1240,7 @@ body {
 }
 
 .dock-toggle:hover {
-  background: var(--sink);
-}
-
-.dock-mark {
-  display: flex;
-  flex: none;
-  color: var(--accent-ink);
-}
-
-.dock-mark svg {
-  width: 20px;
-  height: 20px;
-  display: block;
+  background: var(--bg);
 }
 
 .dock-summary {
@@ -1246,32 +1248,43 @@ body {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.05rem;
+  gap: 0.1rem;
 }
 
+/* The figure sits in the display serif, like the hero salary — the one element
+   allowed to speak above a whisper. */
 .dock-income {
-  font-size: 1rem;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 400;
   letter-spacing: -0.01em;
+  line-height: 1.05;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dock-sched {
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dock-chevron {
   display: flex;
   flex: none;
   color: var(--faint);
-  transition: transform var(--dur) var(--ease);
+  transition: transform 0.45s var(--ease);
 }
 
 .dock-chevron svg {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   display: block;
 }
 
@@ -1279,63 +1292,99 @@ body {
   transform: rotate(180deg);
 }
 
-/* The editor unfolds via the 0fr→1fr grid-rows trick (animatable height). */
+/* The editor unfolds via the 0fr→1fr grid-rows trick (animatable height); its
+   contents settle a beat later with a calm rise, so the panel opens like a fold
+   of paper rather than a popped box. Held at width 0 while collapsed, it adds
+   nothing to the pill's footprint — the card hugs the summary until you open it,
+   then widens to make room. */
 .dock-editor-wrap {
   display: grid;
   grid-template-rows: 0fr;
-  transition: grid-template-rows var(--dur) var(--ease);
+  width: 0;
+  overflow: hidden;
+  transition: grid-template-rows 0.44s var(--ease);
 }
 
 .dock.is-open .dock-editor-wrap {
   grid-template-rows: 1fr;
+  width: 284px;
 }
 
 .dock-editor {
+  min-width: 0;
   min-height: 0;
+  width: 284px; /* fixed, so its contents never reflow as the card widens */
   overflow: hidden;
 }
 
 .dock-editor-pad {
-  padding: 0.4rem 1rem 1.15rem;
+  padding: 0.4rem 1.15rem 1.2rem;
   border-top: 1px solid var(--hairline);
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 0.32s var(--ease),
+    transform 0.32s var(--ease);
+}
+
+.dock.is-open .dock-editor-pad {
+  opacity: 1;
+  transform: none;
+  transition-delay: 0.1s;
 }
 
 .dock-flabel {
   display: block;
-  margin: 1rem 0 0.55rem;
-  font-size: 0.68rem;
+  margin: 1.15rem 0 0.6rem;
+  font-size: 0.65rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--faint);
 }
 
-.dock-editor-pad .field-control {
+.dock-flabel:first-child {
+  margin-top: 0.75rem;
+}
+
+.dock-income-control,
+.dock-hours-control {
   border-bottom-width: 1.5px;
 }
 
-.dock-editor-pad .field-input {
-  font-size: 1.3rem;
+/* Income in the display serif to match the summary and the hero; hours in the
+   tabular sans, since it ticks while you type. */
+.dock-income-control .field-input {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.5rem;
+  letter-spacing: -0.01em;
 }
 
-/* The income "$" leads the figure; the hours "hrs / week" trails it — both set
-   by DOM order, so only their sizes differ here. */
 .dock-income-control .field-suffix {
-  font-size: 1.1rem;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  color: var(--muted);
+}
+
+.dock-hours-control .field-input {
+  font-size: 1.25rem;
 }
 
 .dock-hours-control .field-suffix {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
 }
 
 .dock-slider {
-  margin-top: 0.5rem;
+  margin-top: 0.8rem;
 }
 
+/* Schedule — three quiet toggles, no boxes. Stillness until you choose, then a
+   soft wash of the one green. */
 .dock-chips {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 0.4rem;
+  gap: 0.3rem;
   margin-bottom: 0.9rem;
 }
 
@@ -1343,10 +1392,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.1rem;
-  padding: 0.5rem 0.55rem;
-  border: 1px solid var(--hairline);
-  border-radius: 10px;
+  gap: 0.15rem;
+  padding: 0.6rem;
+  border: 0;
+  border-radius: 12px;
   background: transparent;
   color: var(--ink-2);
   font-family: var(--font-sans);
@@ -1354,35 +1403,34 @@ body {
   cursor: pointer;
   transition:
     background var(--dur) var(--ease),
-    border-color var(--dur) var(--ease),
     color var(--dur) var(--ease);
 }
 
 .dock-chip:hover {
-  background: var(--sink);
+  background: var(--bg);
 }
 
 .dock-chip.is-active {
   background: var(--accent-soft);
-  border-color: transparent;
   color: var(--accent-ink);
 }
 
 .dock-chip-h {
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
 
 .dock-chip-l {
-  font-size: 0.64rem;
+  font-size: 0.63rem;
   font-weight: 500;
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 
 .dock-chip.is-active .dock-chip-l {
   color: var(--accent-ink);
-  opacity: 0.8;
+  opacity: 0.75;
 }
 
 /* Utilities ---------------------------------------------------------------- */
