@@ -58,39 +58,28 @@ export const PEOPLE: Person[] = [
   {
     id: "senator",
     name: "A U.S. Senator",
-    role: "Congressional salary",
-    annualUsd: 174_000,
+    role: "Salary plus estimated stock-trading gains",
+    // $174K Senate salary (unchanged since 2009) plus a rough trading premium:
+    // actively-trading members averaged ~26–31% in 2024, beating the S&P, so on
+    // a portfolio in the low millions the gains can rival the salary. Squarely
+    // an estimate — see the note below the comparison.
+    annualUsd: 450_000,
     weeklyHours: 65,
     hoursBasis: "Congressional Mgmt. Foundation — ~70 h in session, ~59 in district",
     hoursSource: {
       label: "Roll Call — Congress's 70-hour week",
       url: "https://rollcall.com/2014/10/28/all-work-congress-averaging-70-hour-work-week/",
     },
+    note: "≈ $174K Senate salary plus an estimated trading gain — active members averaged ~26–31% in 2024, beating the market.",
     source: {
-      label: "U.S. Senate salary history",
-      url: "https://www.senate.gov/senators/SenateSalariesSince1789.htm",
-    },
-  },
-  {
-    id: "president",
-    name: "The U.S. President",
-    role: "Salary of the office",
-    annualUsd: 400_000,
-    weeklyHours: 90,
-    hoursBasis: "Accounts vary — roughly 8–18 h/day, 7 days (estimate)",
-    hoursSource: {
-      label: "Zippia — the president's hours",
-      url: "https://www.zippia.com/answers/how-many-hours-does-the-president-work/",
-    },
-    source: {
-      label: "Federal officials' salaries",
-      url: "https://en.wikipedia.org/wiki/Salaries_of_United_States_federal_executive_officials",
+      label: "Unusual Whales — 2024 Congressional Trading Report",
+      url: "https://unusualwhales.com/congress-trading-report-2024",
     },
   },
   {
     id: "ceo",
-    name: "A typical big-company CEO",
-    role: "Average S&P 500 pay package",
+    name: "An S&P 500 CEO",
+    role: "Average pay for an S&P 500 chief executive",
     // AFL-CIO Executive Paywatch 2025 (2024 data): average S&P 500 CEO total comp.
     annualUsd: 18_900_000,
     weeklyHours: 62,
@@ -121,6 +110,27 @@ export const PEOPLE: Person[] = [
     },
   },
   {
+    id: "founder",
+    name: "A founder who exited",
+    role: "Payout from selling a startup",
+    // Modeled on Kevin Systrom's reported ~$400M from Instagram's $1B sale to
+    // Facebook (2012), spread across the ~2 years he built it from launch to
+    // exit. A one-time wealth event, like Musk's — measured against the grind
+    // that earned it: $400M ÷ ~2 years ≈ $200M/yr.
+    annualUsd: 200_000_000,
+    weeklyHours: 90,
+    hoursBasis: "The startup grind — founders routinely log 80–100 h/week (estimate)",
+    hoursSource: {
+      label: "Survey — founders' 50–80+ hour weeks",
+      url: "https://www.uktech.news/news/over-25-of-founders-work-50-to-80-hours-a-week-survey-finds-20170601",
+    },
+    note: "A one-time exit, not a salary — here, Instagram's ~$400M sale over ~2 years.",
+    source: {
+      label: "NBC News — Instagram's CEO and the $400M Facebook deal",
+      url: "https://www.nbcnews.com/news/world/instagram-ceo-could-get-400-million-facebook-deal-flna689807",
+    },
+  },
+  {
     id: "swift",
     name: "Taylor Swift",
     role: "A recent touring year",
@@ -135,6 +145,27 @@ export const PEOPLE: Person[] = [
     source: {
       label: "Forbes profile",
       url: "https://www.forbes.com/profile/taylor-swift/",
+    },
+  },
+  {
+    id: "trump",
+    name: "Donald Trump",
+    role: "His 2024 income — crypto, golf & licensing",
+    // Trump's June 2025 federal financial disclosure (covering 2024): $600M+ in
+    // income, led by ~$320M in $TRUMP meme-coin fees plus golf, hotels and
+    // licensing. Revenue, not profit — and the $400K office salary is a rounding
+    // error against it.
+    annualUsd: 600_000_000,
+    weeklyHours: 90,
+    hoursBasis: "Accounts vary widely — long days, 7 days, plenty unstructured (estimate)",
+    hoursSource: {
+      label: "Zippia — the president's hours",
+      url: "https://www.zippia.com/answers/how-many-hours-does-the-president-work/",
+    },
+    note: "Reported income, not profit — and the $400K presidential salary is a rounding error against it.",
+    source: {
+      label: "CNN — Trump's $600M+ in crypto, golf & licensing income",
+      url: "https://www.cnn.com/2025/06/14/business/trump-income-crypto-licensing",
     },
   },
   {

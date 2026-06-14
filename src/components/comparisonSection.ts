@@ -112,7 +112,7 @@ export function comparisonSection(): HTMLElement {
   let hpw = 40;
   let userWeeklyHours = 40; // the schedule's actual hours, for the readout
   let shownMult = 0;
-  let cancel: () => void = () => {};
+  let cancel: () => void = () => { };
 
   function paintMult(value: number): void {
     multValue.textContent = fmtMult(value);
@@ -242,10 +242,22 @@ export function comparisonSection(): HTMLElement {
         "p",
         "items-note",
         "Everyone's pay, measured against the hours they actually work. Pick someone " +
-          "and see the gap — as a plain multiple, and as the hours you'd trade to match it.",
+        "and see the gap — as a plain multiple, and as the hours you'd trade to match it.",
       ),
     ),
     people,
     card,
+    el(
+      "div",
+      "compare-disclaimer",
+      el(
+        "p",
+        "compare-disclaimer-text",
+        "Many of these earnings come from one-off windfalls and mixed income " +
+        "streams that don't translate cleanly into an hourly wage, so treat the " +
+        "figures as wildly inaccurate estimates. The aim is to get a sense of the order of " +
+        "magnitude, not a precise number.",
+      ),
+    ),
   );
 }
