@@ -1,17 +1,37 @@
-/* Color + spacing tokens. White page, black text, a single money-green accent. */
+/* Money is Time — a quiet, message-first sheet.
+   The discipline: ink on paper, one restrained green accent, hierarchy built
+   from scale and space rather than color, gradients, or shadow. Fraunces for
+   display, Inter for everything that holds a number. */
 :root {
-  --bg: #ffffff;
-  --bg-panel: #ffffff;
-  --bg-elevated: #f5f7f5;
-  --border: #e3e7e3;
-  --text: #0a0e0a;
-  --text-muted: #6b746b;
-  --accent: #12a150; /* money green */
-  --accent-soft: #12a15014;
+  --bg: #faf9f6;
+  --paper: #ffffff;
+  --sink: #f3f2ed; /* faint recessed fill (slider track, bars) */
+
+  --ink: #1a1917;
+  --ink-2: #3d3b36; /* secondary text with some weight */
+  --muted: #8c8a82; /* labels, asides */
+  --faint: #b6b4ac; /* scale ticks, the quietest text */
+
+  --hairline: #e7e5dd;
+  --hairline-2: #d9d7cd; /* a touch stronger, for emphasis rules */
+
+  /* One accent. Deeper and more muted than fintech green — used sparingly. */
+  --accent: #1f7a4d;
+  --accent-ink: #186139; /* accent text on paper, for contrast */
+  --accent-bright: #5cb98b; /* accent text on the dark hero */
+  --accent-soft: rgba(31, 122, 77, 0.1);
+
+  /* The single inverted moment (the car). Flat sumi, no gradient. */
+  --dark: #18181a;
+  --on-dark: #f3f2ed;
+  --on-dark-muted: #93918a;
+  --on-dark-line: rgba(243, 242, 237, 0.14);
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
 
   --radius: 14px;
-  --gap: 1rem;
-  --max-width: 880px;
+  --max-width: 760px;
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur: 240ms;
@@ -32,126 +52,71 @@ html {
 body {
   margin: 0;
   background: var(--bg);
-  color: var(--text);
-  font-family:
-    "Fraunces", Georgia, "Times New Roman", "Noto Serif", serif;
+  color: var(--ink);
+  font-family: var(--font-sans);
   font-optical-sizing: auto;
-  line-height: 1.5;
+  line-height: 1.55;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-/* Layout ------------------------------------------------------------------ */
-.layout {
-  width: 100%;
-  max-width: var(--max-width);
-  margin-inline: auto;
-  padding-inline: 1.25rem;
+/* Numbers and small UI lean on Inter's tabular figures. */
+.sans,
+.tabular {
+  font-family: var(--font-sans);
+  font-variant-numeric: tabular-nums;
 }
 
-/* Hero — fullscreen, text dead-center ------------------------------------- */
+/* Hero — one idea, comfortably spaced, but sized to its content ------------ */
 .hero {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  width: 100%;
-  min-height: 100svh;
-  /* 3 rows: statement in the middle row → true vertical center. */
-  display: grid;
-  grid-template-rows: 1fr auto 1fr;
-  justify-items: center;
+  display: flex;
+  flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2rem 1.25rem;
+  gap: clamp(2.25rem, 6vw, 3.5rem);
+  padding: clamp(4rem, 13vh, 7.5rem) 1.5rem clamp(3rem, 8vh, 5rem);
 }
 
-/* Setup quote, anchored to the bottom of the top row. */
 .hero-pre {
-  grid-row: 1;
-  align-self: end;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: clamp(0.5rem, 1.4vw, 0.85rem);
-  margin-bottom: clamp(1.5rem, 3.2vw, 2.4rem);
+  gap: 0.6rem;
 }
 
-/* The mark + statement, the focal block — dead center. */
-.hero-main {
-  grid-row: 2;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(1.1rem, 2.6vw, 1.6rem);
+.hero-quote-text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(1.05rem, 2.4vw, 1.4rem);
+  color: var(--ink-2);
+  letter-spacing: -0.01em;
+  animation: rise 0.7s var(--ease) both;
 }
 
-/* Scroll cue — anchors the lower third and signals "this is a tool". */
-.hero-scroll {
-  position: absolute;
-  bottom: clamp(1.5rem, 4.5vh, 2.75rem);
-  left: 50%;
-  transform: translateX(-50%);
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.7rem;
-  color: var(--text-muted);
-  text-decoration: none;
-  font-size: clamp(0.66rem, 1.3vw, 0.74rem);
-  font-weight: 600;
-  letter-spacing: 0.16em;
+.hero-cite {
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  animation: rise 0.8s var(--ease) 0.45s both;
-  transition: color var(--dur) var(--ease);
+  color: var(--faint);
+  animation: rise 0.7s var(--ease) 0.08s both;
 }
 
-.hero-scroll:hover {
-  color: var(--text);
+.hero-main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.6rem, 4vw, 2.4rem);
 }
 
-.hero-scroll-arrow {
-  width: 14px;
-  height: 14px;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(45deg);
-  animation: bob 1.8s ease-in-out infinite;
-}
-
-@keyframes bob {
-  0%,
-  100% {
-    transform: rotate(45deg) translate(-2px, -2px);
-  }
-  50% {
-    transform: rotate(45deg) translate(2px, 2px);
-  }
-}
-
-/* One clean green wash behind the mark — soft, layered, no muddy blur. */
-.hero::after {
-  content: "";
-  position: absolute;
-  top: 44%;
-  left: 50%;
-  width: min(82vw, 760px);
-  aspect-ratio: 1;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(
-    closest-side,
-    rgba(18, 161, 80, 0.14),
-    rgba(18, 161, 80, 0.04) 46%,
-    transparent 72%
-  );
-  z-index: -1;
-  pointer-events: none;
-  animation: drift 22s ease-in-out infinite;
-}
-
-/* ---- The mark: a coin that is also a clock --------------------------------- */
+/* The mark — a coin that keeps time. Thin monochrome line work, no glow. */
 .hero-mark {
-  width: clamp(132px, 18vw, 196px);
-  margin-bottom: clamp(0.4rem, 1.4vw, 0.9rem);
-  animation: mark-in 1s var(--ease) both;
+  width: clamp(58px, 9vw, 78px);
+  color: var(--ink);
+  animation: mark-in 0.9s var(--ease) both;
 }
 
 .clock {
@@ -161,81 +126,33 @@ body {
   overflow: visible;
 }
 
-/* Coin edge — thin double rim. */
 .clock-rim {
-  stroke: var(--border);
-  stroke-width: 2;
+  stroke: var(--ink);
+  stroke-width: 4;
+  fill: none;
 }
 
-.clock-rim-inner {
-  stroke: #eef1ee;
-  stroke-width: 1.5;
-}
-
-/* Index marks. */
-.clock-ticks .tick {
-  stroke: #c4ccc4;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-.clock-ticks .tick-major {
-  stroke: var(--text);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-}
-
-/* Hour + minute hands. */
-.hand-hour {
-  stroke: var(--text);
-  stroke-width: 6;
-  stroke-linecap: round;
-}
-
-.hand-minute {
-  stroke: var(--text);
+.clock-tick {
+  stroke: var(--ink);
   stroke-width: 4;
   stroke-linecap: round;
 }
 
-/* The sweeping second hand carries the $ coin around the dial. */
-.clock-second {
-  transform-box: view-box;
-  transform-origin: 120px 120px;
-  animation: sweep 7s linear infinite;
-}
-
-.hand-second {
-  stroke: var(--accent);
-  stroke-width: 2.5;
+.clock-hand {
+  stroke: var(--ink);
   stroke-linecap: round;
-}
-
-.clock-trail {
-  stroke-width: 5;
-  stroke-linecap: round;
-}
-
-.coin-body {
-  fill: var(--accent);
-  filter: drop-shadow(0 3px 8px rgba(18, 161, 80, 0.4));
-}
-
-.coin-symbol {
-  fill: #fff;
-  font-family: "Fraunces", Georgia, "Times New Roman", serif;
-  font-weight: 600;
-  font-size: 17px;
+  fill: none;
 }
 
 .clock-hub {
-  fill: var(--bg);
-  stroke: var(--text);
-  stroke-width: 2.5;
+  fill: var(--accent);
 }
 
-.clock-hub-dot {
-  fill: var(--accent);
+/* A single slow sweep — the only motion the mark makes. */
+.clock-sweep {
+  transform-box: view-box;
+  transform-origin: 120px 120px;
+  animation: sweep 12s linear infinite;
 }
 
 @keyframes sweep {
@@ -244,40 +161,31 @@ body {
   }
 }
 
+.hero-statement {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(2.9rem, 11vw, 6rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  animation: rise 0.8s var(--ease) 0.12s both;
+}
+
+.hero-statement .accent {
+  font-style: italic;
+  color: var(--accent-ink);
+}
+
 @keyframes mark-in {
   from {
     opacity: 0;
-    transform: scale(0.92);
+    transform: scale(0.94);
   }
   to {
     opacity: 1;
     transform: none;
   }
-}
-
-/* Editorial pull-quote: italic serif, the setup line. */
-.hero-quote-text {
-  margin: 0;
-  font-style: italic;
-  font-size: clamp(1.15rem, 2.8vw, 1.6rem);
-  font-weight: 400;
-  color: var(--text);
-  letter-spacing: -0.01em;
-  animation: rise 0.7s var(--ease) both;
-}
-
-.hero-statement {
-  margin: 0;
-  font-size: clamp(3rem, 10.5vw, 6.5rem);
-  font-weight: 900;
-  line-height: 1;
-  letter-spacing: -0.025em;
-  color: var(--text);
-  animation: rise 0.8s var(--ease) 0.13s both;
-}
-
-.accent {
-  color: var(--accent);
 }
 
 @keyframes rise {
@@ -291,49 +199,759 @@ body {
   }
 }
 
-@keyframes drift {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) translate(-3%, -2%);
-  }
-  50% {
-    transform: translate(-50%, -50%) translate(3%, 2%);
-  }
-}
-
+/* Layout — one narrow editorial column, lots of air -----------------------*/
 .layout {
+  width: 100%;
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
-  padding-bottom: 3rem;
+  gap: clamp(4rem, 9vw, 6.5rem);
+  padding-top: clamp(1.5rem, 5vw, 3rem);
+  padding-bottom: 8rem;
 }
 
+/* The controls read as a quiet form, not a boxed-in widget. */
 .panel {
-  background: var(--bg-panel);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1.25rem;
+  background: transparent;
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: var(--gap);
-}
-
-/* Empty mount points render nothing until their phase fills them in. */
-.panel:empty,
-.grid:empty {
+.panel:empty {
   display: none;
 }
 
-/* Utility transition classes (used by later phases for tweened/animated UI). */
-.fade-in {
-  animation: fade-in var(--dur) var(--ease) both;
+.controls-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.25rem, 5vw, 3rem);
 }
 
-.tabular {
+.control-divider {
+  display: none; /* space does the separating now */
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.field-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.field-sublabel {
+  margin-top: 0.9rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.field-suffix {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Salary — the headline figure doubles as an editable text field ----------- */
+.salary-value {
+  display: inline-flex;
+  align-items: baseline;
+  position: relative;
+  max-width: 100%;
+  font-family: var(--font-display);
+  font-size: clamp(2.5rem, 8vw, 3.5rem);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink);
+  cursor: text;
+}
+
+.salary-currency {
+  color: var(--muted);
+  margin-right: 0.04em;
+}
+
+/* Off-layout mirror used only to measure the input's natural width. */
+.salary-sizer {
+  position: absolute;
+  visibility: hidden;
+  white-space: pre;
+  pointer-events: none;
+}
+
+.salary-input {
+  min-width: 1ch;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  padding: 0;
+  transition: border-color var(--dur) var(--ease);
+}
+
+/* Hairline on hover, accent on focus — the only hints that it's editable. */
+.salary-value:hover .salary-input {
+  border-color: var(--hairline-2);
+}
+
+.salary-input:focus {
+  border-color: var(--accent);
+}
+
+.slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 24px;
+  margin: 0.5rem 0 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(
+    to right,
+    var(--accent) var(--fill, 0%),
+    var(--hairline-2) var(--fill, 0%)
+  );
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin-top: -8px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1.5px solid var(--accent);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.slider::-webkit-slider-thumb:active {
+  transform: scale(1.15);
+}
+
+.slider:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.slider::-moz-range-track {
+  height: 2px;
+  border-radius: 999px;
+  background: var(--hairline-2);
+}
+
+.slider::-moz-range-progress {
+  height: 2px;
+  border-radius: 999px;
+  background: var(--accent);
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--paper);
+  border: 1.5px solid var(--accent);
+}
+
+.slider:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.slider-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+/* Custom hours field — an underlined entry, not a boxed pill. */
+.field-control {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  border-bottom: 1.5px solid var(--hairline-2);
+  padding: 0 0.1rem 0.45rem;
+  transition: border-color var(--dur) var(--ease);
+}
+
+.field-control:focus-within {
+  border-color: var(--accent);
+}
+
+.field-input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 0;
+}
+
+.field-input::placeholder {
+  color: var(--faint);
+}
+
+.field-input[type="number"]::-webkit-inner-spin-button,
+.field-input[type="number"]::-webkit-outer-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+.field-input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.field-narrow {
+  max-width: 180px;
+  gap: 0.6rem;
+}
+
+.field-narrow .field-label {
+  font-size: 0.7rem;
+}
+
+/* Schedule presets — three quiet cells separated by hairlines ------------- */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.segmented-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 1.1rem 1rem;
+  background: transparent;
+  border: 0;
+  border-left: 1px solid var(--hairline);
+  color: var(--ink-2);
+  font-family: var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.segmented-option:first-child {
+  border-left: 0;
+}
+
+.segmented-option:hover {
+  background: var(--sink);
+}
+
+.segmented-option.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+
+.segmented-icon {
+  display: flex;
+  color: var(--faint);
+  transition: color var(--dur) var(--ease);
+}
+
+.segmented-icon svg {
+  width: 19px;
+  height: 19px;
+  display: block;
+}
+
+.segmented-option.is-active .segmented-icon {
+  color: var(--accent-ink);
+}
+
+.segmented-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.segmented-blurb {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.segmented-option.is-active .segmented-blurb {
+  color: var(--accent-ink);
+  opacity: 0.8;
+}
+
+@media (max-width: 520px) {
+  .segmented {
+    grid-template-columns: 1fr;
+  }
+
+  .segmented-option {
+    border-left: 0;
+    border-top: 1px solid var(--hairline);
+    flex-direction: row;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .segmented-option:first-child {
+    border-top: 0;
+  }
+}
+
+/* Items — goods, told in time ============================================== */
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.items-intro {
+  margin-bottom: clamp(0.5rem, 2vw, 1rem);
+}
+
+.items-eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+}
+
+.items-title {
+  margin: 0.7rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  color: var(--ink);
+}
+
+.items-note {
+  margin: 0.9rem 0 0;
+  max-width: 44ch;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+/* Shared atoms ------------------------------------------------------------- */
+.item {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius);
+  transition:
+    border-color var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.item.reveal {
+  opacity: 0;
+  transform: translateY(16px);
+}
+
+.item.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.6s var(--ease);
+}
+
+.item-icon {
+  display: flex;
+  color: var(--muted);
+}
+
+.item-icon svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.item-icon.is-lg svg {
+  width: 34px;
+  height: 34px;
+}
+
+.item-prompt {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.item-name {
+  margin: 0.3rem 0 0;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.item-place {
+  font-style: italic;
+}
+
+.item-note {
+  margin: 0.6rem 0 0;
+  font-size: 0.78rem;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.item-ofwork {
+  margin: 0.3rem 0 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* The "how long in practice" subtext — a small echo of the headline readout:
+   a value paired with a tracked uppercase unit, in the one quiet green per card. */
+.item-practice {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0.7rem 0 0;
+  color: var(--accent-ink);
+}
+
+.item-practice.is-hidden {
+  display: none;
+}
+
+.item-practice-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
+}
+
+.item-practice-unit {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
+/* The time readout — the hero of every card. Ink, tabular, confident. */
+.item-time {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.item-time.is-empty {
+  color: var(--faint);
+}
+
+.item-time-value {
+  font-variant-numeric: tabular-nums;
+}
+
+.item-time-unit {
+  margin-left: 0.4em;
+  font-size: 0.32em;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  align-self: center;
+}
+
+.item-time.is-inline {
+  font-size: 1.6rem;
+}
+
+.item-time.is-big {
+  font-size: clamp(2.2rem, 6vw, 3rem);
+}
+
+.item-time.is-hero {
+  font-size: clamp(3.4rem, 12vw, 5.5rem);
+}
+
+.item-time.is-mile {
+  font-size: clamp(2.4rem, 7vw, 3.6rem);
+}
+
+/* Coffee — a slim ribbon. Cheap things stay quiet. */
+.item-ribbon {
+  display: flex;
+  align-items: center;
+  gap: 1.1rem;
+  padding: 1.1rem 1.4rem;
+}
+
+.item-ribbon-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.item-ribbon-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+}
+
+.item-ribbon-right .item-ofwork {
+  margin-top: 0.2rem;
+}
+
+/* The everyday grid. */
+.item-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.item-pair > .item:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+.item-card {
+  display: flex;
+  flex-direction: column;
+  padding: 1.6rem;
+}
+
+.item-card .item-icon {
+  margin-bottom: 0.85rem;
+}
+
+.item-card .item-time {
+  margin-top: 1.1rem;
+}
+
+.item-card .item-ofwork {
+  margin-top: 0.5rem;
+}
+
+/* A barely-there lift on hover — no shadow, just a darker hairline. */
+.item-card:hover,
+.item-ribbon:hover {
+  border-color: var(--hairline-2);
+  transform: translateY(-2px);
+}
+
+/* Feature panels (rent, taxes) — same paper, more room, a measuring bar. */
+.item-feature {
+  padding: clamp(1.6rem, 4vw, 2.2rem);
+}
+
+.item-feature-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.item-feature-time {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.3rem;
+}
+
+.item-feature-time .item-ofwork {
+  margin: 0;
+}
+
+.item-bar {
+  margin-top: 1.4rem;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sink);
+  overflow: hidden;
+}
+
+.item-bar-fill {
+  height: 100%;
+  width: 0;
+  background: var(--accent);
+  border-radius: 999px;
+  transition: width 0.5s var(--ease);
+}
+
+.item-bar-label {
+  margin: 0.8rem 0 0;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* Taxes — the bar splits federal vs. California. */
+.tax-bar {
+  display: flex;
+  background: var(--sink);
+}
+
+.tax-seg {
+  height: 100%;
+  transition: width 0.5s var(--ease);
+}
+
+.tax-seg-fed {
+  background: var(--accent);
+}
+
+.tax-seg-state {
+  background: #9aa39b;
+}
+
+.tax-breakdown {
+  margin-top: 1rem;
+}
+
+.tax-dot {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  margin-right: 0.2em;
+  vertical-align: baseline;
+}
+
+.tax-dot.is-fed {
+  background: var(--accent);
+}
+
+.tax-dot.is-state {
+  background: #9aa39b;
+}
+
+/* Car — the one inverted moment. Flat sumi, centered, the loudest number. */
+.item-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(2.4rem, 6vw, 3.25rem) 1.6rem;
+  color: var(--on-dark);
+  background: var(--dark);
+  border-color: var(--dark);
+}
+
+.item-hero .item-icon {
+  color: var(--on-dark-muted);
+  margin-bottom: 0.6rem;
+}
+
+.item-hero .item-prompt {
+  color: var(--on-dark);
+  font-size: 1.2rem;
+}
+
+.item-hero .item-name {
+  color: var(--on-dark-muted);
+}
+
+.item-hero .item-time {
+  color: var(--on-dark);
+  justify-content: center;
+  margin-top: 0.7rem;
+}
+
+.item-hero .item-time-unit {
+  color: var(--on-dark-muted);
+}
+
+.item-hero .item-ofwork {
+  color: var(--on-dark-muted);
+}
+
+.item-hero .item-practice {
+  color: var(--accent-bright);
+}
+
+/* Life milestones — a ledger row: the figure, then the aside. */
+.item-milestone {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.8rem;
+  padding: clamp(1.6rem, 4vw, 2rem);
+  border-left: 2px solid var(--accent);
+}
+
+.item-milestone-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item-milestone-figure .item-ofwork {
+  margin-top: 0.2rem;
+}
+
+.item-milestone-head {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.item-milestone-head .item-prompt {
+  font-size: 1.15rem;
+}
+
+@media (max-width: 540px) {
+  .item-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .item-milestone {
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+}
+
+/* Utilities ---------------------------------------------------------------- */
+.fade-in {
+  animation: fade-in var(--dur) var(--ease) both;
 }
 
 @keyframes fade-in {
