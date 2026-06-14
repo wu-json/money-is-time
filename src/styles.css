@@ -231,6 +231,30 @@ body {
   display: none; /* space does the separating now */
 }
 
+/* Privacy reassurance under the inputs — quiet, the same muted register as the
+   field labels, with the source link as a checkable receipt. */
+.controls-privacy {
+  margin: 1.5rem 0 0;
+  max-width: 44ch;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  font-weight: 500;
+  color: var(--faint);
+}
+
+.controls-privacy-link {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--hairline-2);
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.controls-privacy-link:hover {
+  color: var(--ink);
+  text-decoration-color: currentColor;
+}
+
 .field {
   display: flex;
   flex-direction: column;

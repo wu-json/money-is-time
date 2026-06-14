@@ -18,7 +18,23 @@ function mountControls(): void {
   form.addEventListener("submit", (e) => e.preventDefault());
 
   form.append(salaryInput(), el("hr", "control-divider"), scheduleSelector());
-  controls.append(form);
+
+  // A quiet reassurance for anyone wary of typing their salary in: nothing here
+  // is stored or sent — it's a static page that runs entirely in the browser.
+  // The claim links to the source so it can be verified, not just trusted.
+  const source = el("a", "controls-privacy-link", "the source code") as HTMLAnchorElement;
+  source.href = "https://github.com/wu-json/money-is-time";
+  source.target = "_blank";
+  source.rel = "noopener noreferrer";
+  const privacy = el(
+    "p",
+    "controls-privacy",
+    "Nothing you enter is saved or sent — it stays in your browser. Verify it in ",
+    source,
+    ".",
+  );
+
+  controls.append(form, privacy);
 }
 
 function mountItems(): void {
