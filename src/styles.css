@@ -972,6 +972,215 @@ body {
   }
 }
 
+/* A month, in hours — the donut breakdown ================================== */
+.monthly {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.donut-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.75rem, 5vw, 3.25rem);
+}
+
+/* The ring + the readout floating in its hole. */
+.donut-figure {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+  margin-inline: auto;
+  aspect-ratio: 1;
+}
+
+.donut-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.donut-track {
+  stroke: var(--hairline);
+}
+
+.donut-seg {
+  cursor: pointer;
+  transition:
+    stroke-width var(--dur) var(--ease),
+    opacity var(--dur) var(--ease),
+    stroke var(--dur) var(--ease);
+}
+
+/* The open part of the month — your free time — sits in a calm, paler green than
+   any bill, so it reads as breathing room, not another expense. */
+.donut-free {
+  stroke: #d7ece1;
+}
+
+/* On hover the rest of the ring recedes and the chosen wedge thickens; the free
+   wedge also deepens so "this is yours" lights up. */
+.donut-figure.is-hovering .donut-seg {
+  opacity: 0.32;
+}
+
+.donut-figure.is-hovering .donut-seg.is-active {
+  opacity: 1;
+  stroke-width: 31;
+}
+
+.donut-free.is-active {
+  stroke: #b4ddc8;
+}
+
+.donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  pointer-events: none;
+  padding: 0 18%;
+}
+
+.item-time.is-donut {
+  justify-content: center;
+  font-size: clamp(2.1rem, 8vw, 2.9rem);
+}
+
+.donut-center .item-ofwork {
+  margin-top: 0.45rem;
+}
+
+.donut-center .item-practice {
+  margin-top: 0.55rem;
+}
+
+/* Legend — one quiet, focusable row per category. */
+.donut-legend {
+  display: flex;
+  flex-direction: column;
+}
+
+.donut-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.7rem 0.4rem;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--hairline);
+  font-family: var(--font-sans);
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  border-radius: 8px;
+  transition:
+    background var(--dur) var(--ease),
+    opacity var(--dur) var(--ease);
+}
+
+.donut-row:first-child {
+  border-top: 0;
+}
+
+.donut-row:hover,
+.donut-row.is-active {
+  background: var(--sink);
+}
+
+.donut-row:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.donut-swatch {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+}
+
+.donut-swatch.is-free {
+  background: #d7ece1;
+}
+
+/* "Free & clear" reads as the payoff line: a hairline above it, the name in the
+   accent green. */
+.donut-row.is-freerow {
+  margin-top: 0.35rem;
+  border-top: 1px solid var(--hairline-2);
+}
+
+.donut-row.is-freerow .donut-row-name {
+  color: var(--accent-ink);
+}
+
+.donut-row.is-freerow .donut-row-value {
+  color: var(--accent-ink);
+}
+
+.donut-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.donut-row-name {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.donut-row-detail {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.donut-row-time {
+  flex: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.donut-row-value {
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.donut-row-unit {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+@media (max-width: 620px) {
+  .donut-grid {
+    grid-template-columns: 1fr;
+    gap: clamp(1.5rem, 6vw, 2.25rem);
+  }
+
+  .donut-figure {
+    max-width: 280px;
+  }
+}
+
 /* Utilities ---------------------------------------------------------------- */
 .fade-in {
   animation: fade-in var(--dur) var(--ease) both;

@@ -5,6 +5,7 @@ import { el } from "./dom";
 import { salaryInput } from "./components/salaryInput";
 import { scheduleSelector } from "./components/scheduleSelector";
 import { itemsSection } from "./components/itemsSection";
+import { monthlySection } from "./components/monthlySection";
 
 function mountControls(): void {
   const controls = document.querySelector<HTMLElement>("#controls");
@@ -22,6 +23,12 @@ function mountItems(): void {
   if (!items) return;
   items.append(itemsSection());
   revealOnScroll(items);
+}
+
+function mountMonthly(): void {
+  const monthly = document.querySelector<HTMLElement>("#monthly");
+  if (!monthly) return;
+  monthly.append(monthlySection());
 }
 
 // Fade each card up as it scrolls into view. Done before first paint (the class
@@ -48,3 +55,4 @@ function revealOnScroll(root: HTMLElement): void {
 
 mountControls();
 mountItems();
+mountMonthly();
