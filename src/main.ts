@@ -8,6 +8,7 @@ import { itemsSection } from "./components/itemsSection";
 import { monthlySection } from "./components/monthlySection";
 import { comparisonSection } from "./components/comparisonSection";
 import { dock } from "./components/dock";
+import { topbar } from "./components/topbar";
 
 function mountControls(): void {
   const controls = document.querySelector<HTMLElement>("#controls");
@@ -65,4 +66,4 @@ mountControls();
 mountItems();
 mountMonthly();
 mountComparison();
-document.body.append(dock());
+document.body.append(topbar(), dock());

@@ -1650,6 +1650,114 @@ body {
   opacity: 0.75;
 }
 
+/* Top links — HN / source / blog ------------------------------------------- */
+/* One paper bar pinned top-right, the same floating-card grammar as the dock
+   at the other corner: warm hairline border, a single ink-tinted lift, links
+   divided by hairlines rather than spread into separate pills. Labels borrow
+   the page's eyebrow idiom — uppercase, letter-spaced, muted — so the cluster
+   reads as part of the sheet and earns ink only on hover. */
+.topbar {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + clamp(0.75rem, 2vw, 1.1rem));
+  right: calc(env(safe-area-inset-right, 0px) + clamp(0.75rem, 2vw, 1.1rem));
+  z-index: 55;
+  display: flex;
+  align-items: stretch;
+  padding: 0.25rem;
+  gap: 0.1rem;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  box-shadow:
+    0 1px 1px rgba(26, 25, 23, 0.04),
+    0 10px 30px -18px rgba(26, 25, 23, 0.22);
+  transition: box-shadow 0.4s var(--ease);
+}
+
+.topbar:hover {
+  box-shadow:
+    0 1px 1px rgba(26, 25, 23, 0.05),
+    0 14px 38px -18px rgba(26, 25, 23, 0.26);
+}
+
+.topbar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  color: var(--ink-2);
+  text-decoration: none;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+  transition:
+    color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+/* Hairline seams between links, kept clear of the rounded ends. */
+.topbar-link + .topbar-link {
+  position: relative;
+}
+.topbar-link + .topbar-link::before {
+  content: "";
+  position: absolute;
+  left: -0.1rem;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 1px;
+  background: var(--hairline);
+}
+
+.topbar-link:hover,
+.topbar-link:focus-visible {
+  outline: 0;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+.topbar-icon {
+  display: inline-flex;
+  line-height: 0;
+  color: var(--muted);
+  transition: color var(--dur) var(--ease);
+}
+
+.topbar-link:hover .topbar-icon,
+.topbar-link:focus-visible .topbar-icon {
+  color: var(--ink);
+}
+
+/* All three marks share a square viewBox, so one height keeps them even. */
+.topbar-icon svg {
+  display: block;
+  height: 13px;
+  width: auto;
+}
+
+/* The blossom is the personal-site flower mark — let it bloom into the accent
+   green on hover, the page's one sanctioned color. */
+.topbar-blog:hover .topbar-icon,
+.topbar-blog:focus-visible .topbar-icon {
+  color: var(--accent-ink);
+}
+
+/* On narrow screens the labels would crowd the hero — keep just the icons,
+   and let the seams hug the tighter icon-only buttons. */
+@media (max-width: 600px) {
+  .topbar-label {
+    display: none;
+  }
+  .topbar-link {
+    padding: 0.45rem 0.55rem;
+  }
+}
+
 /* Utilities ---------------------------------------------------------------- */
 .fade-in {
   animation: fade-in var(--dur) var(--ease) both;
