@@ -1,27 +1,45 @@
-// Turn a labor-time (in minutes) into human units — relative to the user's OWN
-// schedule, never a hard-coded workload. A "week" is exactly the hours/week they
-// entered; a "year" is 52 of those. So "8 years" means literally 8 years of
-// their gross pay (price ÷ salary), independent of how many hours they grind;
-// minutes and hours stay their real labor time. We deliberately omit a "day"
-// unit, since that would smuggle in an 8h-day assumption.
+// Turn labor-time (in minutes) into a display. We keep ONE unambiguous primary
+// unit — clock-hours of work, or minutes when it's under an hour — and pair it
+// with a plain-language "how long in practice" estimate measured against the
+// user's own schedule. Hours never lie; a "week" only means something once you
+// say how many hours a week someone works, so that lives in the subtext.
 
-export type TimePart = { value: number; unit: string };
+const groups = new Intl.NumberFormat("en-US");
 
-// We show only the single dominant unit, so each call returns one part.
-export function timeParts(totalMinutes: number, hoursPerWeek: number): TimePart[] {
+export type Primary = { value: string; unit: string };
+export type Practice = { value: string; unit: string };
+
+// The headline: minutes under an hour, otherwise whole (grouped) hours.
+export function primaryTime(totalMinutes: number): Primary {
   const total = Math.max(0, Math.round(totalMinutes));
-  const week = hoursPerWeek > 0 ? hoursPerWeek * 60 : Infinity;
-  const units = [
-    { min: week * 52, one: "year", many: "years" },
-    { min: week, one: "week", many: "weeks" },
-    { min: 60, one: "hr", many: "hrs" },
-    { min: 1, one: "min", many: "min" },
-  ];
+  if (total < 60) return { value: String(total), unit: "min" };
+  const hours = Math.round(total / 60);
+  return { value: groups.format(hours), unit: hours === 1 ? "hour" : "hours" };
+}
 
-  const unit = units.find((u) => total >= u.min);
-  if (!unit) return [{ value: 0, unit: "min" }];
-  const value = Math.floor(total / unit.min);
-  return [{ value, unit: value === 1 ? unit.one : unit.many }];
+// One decimal below 10, a whole number above — "1.5", "12", "2.7".
+function approx(n: number): string {
+  const r = n < 10 ? Math.round(n * 10) / 10 : Math.round(n);
+  return Number.isInteger(r) ? String(r) : r.toFixed(1);
+}
+
+// The subtext: those same hours expressed as the user's *work* weeks (or work
+// years past one) — a "work week" is exactly the hours/week they entered, so the
+// unit is unambiguous without spelling out the schedule. Returns null below one
+// work-week, where the raw hours already tell the story on their own.
+export function practiceEstimate(
+  totalMinutes: number,
+  hoursPerWeek: number,
+): Practice | null {
+  if (hoursPerWeek <= 0) return null;
+  const weeks = totalMinutes / 60 / hoursPerWeek;
+  if (weeks < 1) return null;
+  if (weeks >= 52) {
+    const v = approx(weeks / 52);
+    return { value: `~ ${v}`, unit: `work ${v === "1" ? "year" : "years"}` };
+  }
+  const v = approx(weeks);
+  return { value: `~ ${v}`, unit: `work ${v === "1" ? "week" : "weeks"}` };
 }
 
 // Price formatter: cents only when they exist ($6.25, but $3,300 not $3,300.00).

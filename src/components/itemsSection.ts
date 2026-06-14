@@ -1,23 +1,24 @@
 // Phase 3 — goods as time. Renders the catalog as a narrative sequence of
 // cards, each in its own visual register (a thin coffee ribbon up to a
-// full-bleed car hero). Every card's time-cost recomputes from the live hourly
-// wage and *counts* to its new value when you change salary or hours.
+// full-bleed car hero). Every card shows its cost as clock-hours of work (the
+// one unambiguous unit) plus a "how long in practice" subtext in the user's own
+// work-weeks. Both *count* to their new value when you change salary or hours.
 
 import { el } from "../dom";
 import { effect } from "../store";
 import { tweenNumber } from "../tween";
 import { hourlyWageUsd, netHourlyWageUsd, salary, schedule } from "../state";
 import { federalIncomeTax, californiaIncomeTax } from "../calc";
-import { timeParts, money, type TimePart } from "../format";
+import { primaryTime, practiceEstimate, money, type Primary, type Practice } from "../format";
 import { ITEMS, type Item } from "../data/items";
 
 const reduceMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
 ).matches;
 
-// What the time number resolves to, frame by frame. `null` = no valid wage yet
+// What the readout resolves to, frame by frame. `null` = no valid wage yet
 // (salary or hours at 0), which cards render as a gentle placeholder.
-type TimeInfo = { parts: TimePart[]; minutes: number } | null;
+type TimeInfo = { primary: Primary; practice: Practice | null; minutes: number } | null;
 
 // Minutes the user works in an average month — the denominator for "share of
 // your month" visuals. Read outside an effect (no subscription needed): the
@@ -34,72 +35,91 @@ function iconEl(svg: string, extra = ""): HTMLElement {
   return span;
 }
 
-// The shared time readout: one big tabular number and its unit. We show only
-// the dominant unit ("12 weeks", "5 min") — punchier, and no middot to misread
-// as a decimal. Size is set by the modifier class.
-function timeView(modifier: string) {
-  const node = el("div", `item-time ${modifier}`);
+// The shared readout: one big tabular number + its unit (hours / min), and a
+// muted practice subline ("≈ 12 weeks at 40 h/week") that hides itself when the
+// item is under a work-week. Size of the headline is set by the modifier class.
+function readout(modifier: string): {
+  time: HTMLElement;
+  practice: HTMLElement;
+  update: (info: TimeInfo) => void;
+} {
+  const time = el("div", `item-time ${modifier}`);
   const val = el("span", "item-time-value tabular");
   const unit = el("span", "item-time-unit");
-  node.append(val, unit);
+  time.append(val, unit);
 
-  const set = (info: TimeInfo) => {
+  // A small echo of the headline: value + tracked uppercase unit.
+  const practice = el("p", "item-practice");
+  const pVal = el("span", "item-practice-value tabular");
+  const pUnit = el("span", "item-practice-unit");
+  practice.append(pVal, pUnit);
+
+  const update = (info: TimeInfo) => {
     if (!info) {
-      node.classList.add("is-empty");
+      time.classList.add("is-empty");
       val.textContent = "—";
       unit.textContent = "";
+      practice.classList.add("is-hidden");
       return;
     }
-    node.classList.remove("is-empty");
-    const [p] = info.parts;
-    val.textContent = String(p.value);
-    unit.textContent = ` ${p.unit}`;
+    time.classList.remove("is-empty");
+    val.textContent = info.primary.value;
+    unit.textContent = ` ${info.primary.unit}`;
+    if (info.practice) {
+      practice.classList.remove("is-hidden");
+      pVal.textContent = info.practice.value;
+      pUnit.textContent = info.practice.unit;
+    } else {
+      practice.classList.add("is-hidden");
+    }
   };
 
-  return { node, set };
+  return { time, practice, update };
 }
 
 type Built = { node: HTMLElement; update: (info: TimeInfo) => void };
 
 // 1) Coffee — a slim full-width ribbon: cheap things shouldn't shout.
 function ribbon(item: Item): Built {
+  const r = readout("is-inline");
   const text = el(
     "div",
     "item-ribbon-text",
     el("p", "item-prompt", item.prompt),
     el("p", "item-name", `${item.name} · ${item.place} · ${money(item.priceUsd ?? 0)}`),
   );
-  const time = timeView("is-inline");
   const right = el(
     "div",
     "item-ribbon-right",
-    time.node,
+    r.time,
     el("span", "item-ofwork", "of work"),
+    r.practice,
   );
   const node = el("article", "item item-ribbon", iconEl(item.icon), text, right);
-  return { node, update: time.set };
+  return { node, update: r.update };
 }
 
 // 2 & 3) Brunch / DoorDash — standard vertical cards, sat side by side.
 function card(item: Item): Built {
-  const time = timeView("is-big");
+  const r = readout("is-big");
   const node = el(
     "article",
     "item item-card",
     iconEl(item.icon),
     el("p", "item-prompt", item.prompt),
     el("p", "item-name", item.name, el("span", "item-place", ` ${item.place}`)),
-    time.node,
+    r.time,
     el("p", "item-ofwork", `of work · ${money(item.priceUsd ?? 0)}`),
+    r.practice,
   );
   if (item.note) node.append(el("p", "item-note", item.note));
-  return { node, update: time.set };
+  return { node, update: r.update };
 }
 
 // 4) Rent — a feature panel with a bar showing the share of your working month
 // the rent swallows.
 function feature(item: Item): Built {
-  const time = timeView("is-big");
+  const r = readout("is-big");
   const fill = el("div", "item-bar-fill");
   const bar = el("div", "item-bar", fill);
   const barLabel = el("p", "item-bar-label");
@@ -117,13 +137,14 @@ function feature(item: Item): Built {
         el("p", "item-name", `${item.name} · ${item.place} · ${money(item.priceUsd ?? 0)}`),
       ),
     ),
-    el("div", "item-feature-time", time.node, el("span", "item-ofwork", "of work, every month")),
+    el("div", "item-feature-time", r.time, el("span", "item-ofwork", "of work, every month")),
+    r.practice,
     bar,
     barLabel,
   );
 
   const update = (info: TimeInfo) => {
-    time.set(info);
+    r.update(info);
     const perMonth = workMinutesPerMonth();
     if (!info || perMonth <= 0) {
       fill.style.width = "0%";
@@ -139,17 +160,18 @@ function feature(item: Item): Built {
 
 // 5) Car — the closer. One enormous number, full bleed.
 function hero(item: Item): Built {
-  const time = timeView("is-hero");
+  const r = readout("is-hero");
   const node = el(
     "article",
     "item item-hero",
     iconEl(item.icon, "is-lg"),
     el("p", "item-prompt", item.prompt),
     el("p", "item-name", `${item.name} · ${money(item.priceUsd ?? 0)}`),
-    time.node,
+    r.time,
     el("p", "item-ofwork", "of work"),
+    r.practice,
   );
-  return { node, update: time.set };
+  return { node, update: r.update };
 }
 
 // The calendar day you'd stop "working for the government" if every dollar from
@@ -162,10 +184,11 @@ function freedomDate(rate: number): string {
 }
 
 // Taxes — like the rent feature, but the "price" is computed from salary and
-// the bar splits into federal vs. California. Self-wired (multiple reactive
-// numbers), so it skips the generic wire().
+// the bar splits into federal vs. California. Time-worked-to-pay-tax is measured
+// against the *gross* wage. Self-wired (multiple reactive numbers), so it skips
+// the generic wire().
 function taxCard(item: Item): HTMLElement {
-  const time = timeView("is-big");
+  const r = readout("is-big");
   const fed = el("div", "tax-seg tax-seg-fed");
   const state = el("div", "tax-seg tax-seg-state");
   const bar = el("div", "item-bar tax-bar", fed, state);
@@ -186,7 +209,8 @@ function taxCard(item: Item): HTMLElement {
         el("p", "item-name", `${item.name} · ${item.place}`),
       ),
     ),
-    el("div", "item-feature-time", time.node, el("span", "item-ofwork", "of work a year")),
+    el("div", "item-feature-time", r.time, el("span", "item-ofwork", "of work a year")),
+    r.practice,
     bar,
     breakdown,
     dateLabel,
@@ -207,7 +231,7 @@ function taxCard(item: Item): HTMLElement {
     cancel();
 
     if (wage <= 0 || pay <= 0 || total <= 0) {
-      time.set(null);
+      r.update(null);
       fed.style.width = "0%";
       state.style.width = "0%";
       breakdown.textContent = "";
@@ -220,37 +244,38 @@ function taxCard(item: Item): HTMLElement {
     state.style.width = `${((stateTax / pay) * 100).toFixed(1)}%`;
     breakdown.replaceChildren(
       dot("is-fed"),
-      ` Federal ${money(Math.round(fedTax))} `,
+      ` Federal ${money(Math.round(fedTax))} `,
       dot("is-state"),
-      ` California ${money(Math.round(stateTax))} · ~${Math.round(rate * 100)}% of your pay`,
+      ` California ${money(Math.round(stateTax))} · ~${Math.round(rate * 100)}% of your pay`,
     );
     dateLabel.textContent = `You work until ${freedomDate(rate)} just to cover it.`;
 
     const target = (total / wage) * 60;
     if (reduceMotion) {
       shown = target;
-      time.set({ parts: timeParts(target, hpw), minutes: target });
+      r.update({ primary: primaryTime(target), practice: practiceEstimate(target, hpw), minutes: target });
       return;
     }
     cancel = tweenNumber(shown, target, 520, (m) => {
       shown = m;
-      time.set({ parts: timeParts(m, hpw), minutes: m });
+      r.update({ primary: primaryTime(m), practice: practiceEstimate(m, hpw), minutes: m });
     });
   });
 
   return node;
 }
 
-// 6 & 7) Life milestones — a ledger-like row with the time (now in years) on
-// the left and a provocative aside on the right. Distinct from the centered car
-// hero so the escalation reads as its own beat.
+// 6 & 7) Life milestones — a ledger-like row with the time on the left and a
+// provocative aside on the right. Distinct from the centered car hero so the
+// escalation reads as its own beat.
 function milestone(item: Item): Built {
-  const time = timeView("is-mile");
+  const r = readout("is-mile");
   const figure = el(
     "div",
     "item-milestone-figure",
-    time.node,
+    r.time,
     el("span", "item-ofwork", "of work"),
+    r.practice,
   );
   const text = el(
     "div",
@@ -260,7 +285,7 @@ function milestone(item: Item): Built {
   );
   if (item.note) text.append(el("p", "item-note", item.note));
   const node = el("article", "item item-milestone", figure, text);
-  return { node, update: time.set };
+  return { node, update: r.update };
 }
 
 function build(item: Item): Built {
@@ -278,8 +303,9 @@ function build(item: Item): Built {
   }
 }
 
-// Drive a card's time number: recompute the target from the live wage and tween
-// toward it (interruptibly), or hand back null when there's no valid wage.
+// Drive a card's readout: recompute the target labor-minutes from the live
+// after-tax wage and tween toward it (interruptibly), or hand back null when
+// there's no valid wage.
 function wire(price: number, render: (info: TimeInfo) => void): void {
   let shown = 0;
   let cancel: () => void = () => {};
@@ -294,12 +320,12 @@ function wire(price: number, render: (info: TimeInfo) => void): void {
     const target = (price / wage) * 60; // minutes of labor (after-tax wage)
     if (reduceMotion) {
       shown = target;
-      render({ parts: timeParts(target, hpw), minutes: target });
+      render({ primary: primaryTime(target), practice: practiceEstimate(target, hpw), minutes: target });
       return;
     }
     cancel = tweenNumber(shown, target, 520, (m) => {
       shown = m;
-      render({ parts: timeParts(m, hpw), minutes: m });
+      render({ primary: primaryTime(m), practice: practiceEstimate(m, hpw), minutes: m });
     });
   });
 }

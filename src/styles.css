@@ -18,6 +18,7 @@
   /* One accent. Deeper and more muted than fintech green — used sparingly. */
   --accent: #1f7a4d;
   --accent-ink: #186139; /* accent text on paper, for contrast */
+  --accent-bright: #5cb98b; /* accent text on the dark hero */
   --accent-soft: rgba(31, 122, 77, 0.1);
 
   /* The single inverted moment (the car). Flat sumi, no gradient. */
@@ -698,6 +699,35 @@ body {
   color: var(--muted);
 }
 
+/* The "how long in practice" subtext — a small echo of the headline readout:
+   a value paired with a tracked uppercase unit, in the one quiet green per card. */
+.item-practice {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  margin: 0.7rem 0 0;
+  color: var(--accent-ink);
+}
+
+.item-practice.is-hidden {
+  display: none;
+}
+
+.item-practice-value {
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.item-practice-unit {
+  font-size: 0.66rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.72;
+}
+
 /* The time readout — the hero of every card. Ink, tabular, confident. */
 .item-time {
   display: flex;
@@ -929,6 +959,10 @@ body {
   color: var(--on-dark-muted);
 }
 
+.item-hero .item-practice {
+  color: var(--accent-bright);
+}
+
 /* Life milestones — a ledger row: the figure, then the aside. */
 .item-milestone {
   display: grid;
@@ -943,10 +977,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.item-milestone-figure .item-time {
-  color: var(--accent-ink);
 }
 
 .item-milestone-figure .item-ofwork {
