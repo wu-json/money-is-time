@@ -7,8 +7,9 @@
 export type TimePart = { value: number; unit: string };
 
 const UNITS = [
-  { min: 2400, one: "week", many: "weeks" }, // 40h
-  { min: 480, one: "day", many: "days" }, //  8h
+  { min: 124800, one: "year", many: "years" }, // 52 × 40h
+  { min: 2400, one: "week", many: "weeks" }, //      40h
+  { min: 480, one: "day", many: "days" }, //          8h
   { min: 60, one: "hr", many: "hrs" },
   { min: 1, one: "min", many: "min" },
 ];

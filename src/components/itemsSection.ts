@@ -6,7 +6,8 @@
 import { el } from "../dom";
 import { effect } from "../store";
 import { tweenNumber } from "../tween";
-import { hourlyWageUsd, schedule } from "../state";
+import { hourlyWageUsd, salary, schedule } from "../state";
+import { federalIncomeTax, californiaIncomeTax } from "../calc";
 import { timeParts, money, type TimePart } from "../format";
 import { ITEMS, type Item } from "../data/items";
 
@@ -33,28 +34,26 @@ function iconEl(svg: string, extra = ""): HTMLElement {
   return span;
 }
 
-// The shared time readout: a big tabular number, its unit, and an optional
-// secondary unit ("· 4 days"). Size is set by the modifier class.
+// The shared time readout: one big tabular number and its unit. We show only
+// the dominant unit ("12 weeks", "5 min") — punchier, and no middot to misread
+// as a decimal. Size is set by the modifier class.
 function timeView(modifier: string) {
   const node = el("div", `item-time ${modifier}`);
   const val = el("span", "item-time-value tabular");
   const unit = el("span", "item-time-unit");
-  const sec = el("span", "item-time-sec tabular");
-  node.append(val, unit, sec);
+  node.append(val, unit);
 
   const set = (info: TimeInfo) => {
     if (!info) {
       node.classList.add("is-empty");
       val.textContent = "—";
       unit.textContent = "";
-      sec.textContent = "";
       return;
     }
     node.classList.remove("is-empty");
-    const [p, s] = info.parts;
+    const [p] = info.parts;
     val.textContent = String(p.value);
     unit.textContent = ` ${p.unit}`;
-    sec.textContent = s ? ` · ${s.value} ${s.unit}` : "";
   };
 
   return { node, set };
@@ -68,7 +67,7 @@ function ribbon(item: Item): Built {
     "div",
     "item-ribbon-text",
     el("p", "item-prompt", item.prompt),
-    el("p", "item-name", `${item.name} · ${item.place} · ${money(item.priceUsd)}`),
+    el("p", "item-name", `${item.name} · ${item.place} · ${money(item.priceUsd ?? 0)}`),
   );
   const time = timeView("is-inline");
   const right = el(
@@ -91,7 +90,7 @@ function card(item: Item): Built {
     el("p", "item-prompt", item.prompt),
     el("p", "item-name", item.name, el("span", "item-place", ` ${item.place}`)),
     time.node,
-    el("p", "item-ofwork", `of work · ${money(item.priceUsd)}`),
+    el("p", "item-ofwork", `of work · ${money(item.priceUsd ?? 0)}`),
   );
   if (item.note) node.append(el("p", "item-note", item.note));
   return { node, update: time.set };
@@ -115,7 +114,7 @@ function feature(item: Item): Built {
         "div",
         "item-feature-titles",
         el("p", "item-prompt", item.prompt),
-        el("p", "item-name", `${item.name} · ${item.place} · ${money(item.priceUsd)}`),
+        el("p", "item-name", `${item.name} · ${item.place} · ${money(item.priceUsd ?? 0)}`),
       ),
     ),
     el("div", "item-feature-time", time.node, el("span", "item-ofwork", "of work, every month")),
@@ -147,7 +146,7 @@ function hero(item: Item): Built {
     "item item-hero fade-in",
     iconEl(item.icon, "is-lg"),
     el("p", "item-prompt", item.prompt),
-    el("p", "item-name", `${item.name} · ${money(item.priceUsd)}`),
+    el("p", "item-name", `${item.name} · ${money(item.priceUsd ?? 0)}`),
     time.node,
     foot,
   );
@@ -168,6 +167,116 @@ function hero(item: Item): Built {
   return { node, update };
 }
 
+// The calendar day you'd stop "working for the government" if every dollar from
+// Jan 1 went to taxes first — the Tax-Freedom-Day framing.
+function freedomDate(rate: number): string {
+  const dayOfYear = Math.min(365, Math.max(1, Math.round(rate * 365)));
+  const d = new Date(2025, 0, 1);
+  d.setDate(d.getDate() + dayOfYear - 1);
+  return d.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+}
+
+// Taxes — like the rent feature, but the "price" is computed from salary and
+// the bar splits into federal vs. California. Self-wired (multiple reactive
+// numbers), so it skips the generic wire().
+function taxCard(item: Item): HTMLElement {
+  const time = timeView("is-big");
+  const fed = el("div", "tax-seg tax-seg-fed");
+  const state = el("div", "tax-seg tax-seg-state");
+  const bar = el("div", "item-bar tax-bar", fed, state);
+  const breakdown = el("p", "item-name tax-breakdown");
+  const dateLabel = el("p", "item-bar-label");
+
+  const node = el(
+    "article",
+    "item item-feature item-tax fade-in",
+    el(
+      "div",
+      "item-feature-head",
+      iconEl(item.icon),
+      el(
+        "div",
+        "item-feature-titles",
+        el("p", "item-prompt", item.prompt),
+        el("p", "item-name", `${item.name} · ${item.place}`),
+      ),
+    ),
+    el("div", "item-feature-time", time.node, el("span", "item-ofwork", "of work a year")),
+    bar,
+    breakdown,
+    dateLabel,
+  );
+  if (item.note) node.append(el("p", "item-note", item.note));
+
+  const dot = (cls: string) => el("span", `tax-dot ${cls}`);
+
+  let shown = 0;
+  let cancel: () => void = () => {};
+  effect(() => {
+    const pay = salary();
+    const wage = hourlyWageUsd();
+    const fedTax = federalIncomeTax(pay);
+    const stateTax = californiaIncomeTax(pay);
+    const total = fedTax + stateTax;
+    cancel();
+
+    if (wage <= 0 || pay <= 0 || total <= 0) {
+      time.set(null);
+      fed.style.width = "0%";
+      state.style.width = "0%";
+      breakdown.textContent = "";
+      dateLabel.textContent = "";
+      return;
+    }
+
+    const rate = total / pay;
+    fed.style.width = `${((fedTax / pay) * 100).toFixed(1)}%`;
+    state.style.width = `${((stateTax / pay) * 100).toFixed(1)}%`;
+    breakdown.replaceChildren(
+      dot("is-fed"),
+      ` Federal ${money(Math.round(fedTax))} `,
+      dot("is-state"),
+      ` California ${money(Math.round(stateTax))} · ~${Math.round(rate * 100)}% of your pay`,
+    );
+    dateLabel.textContent = `You work until ${freedomDate(rate)} just to cover it.`;
+
+    const target = (total / wage) * 60;
+    if (reduceMotion) {
+      shown = target;
+      time.set({ parts: timeParts(target), minutes: target });
+      return;
+    }
+    cancel = tweenNumber(shown, target, 520, (m) => {
+      shown = m;
+      time.set({ parts: timeParts(m), minutes: m });
+    });
+  });
+
+  return node;
+}
+
+// 6 & 7) Life milestones — a ledger-like row with the time (now in years) on
+// the left and a provocative aside on the right. Distinct from the centered car
+// hero so the escalation reads as its own beat.
+function milestone(item: Item): Built {
+  const time = timeView("is-mile");
+  const figure = el(
+    "div",
+    "item-milestone-figure",
+    time.node,
+    el("span", "item-ofwork", "of work"),
+  );
+  const text = el(
+    "div",
+    "item-milestone-text",
+    el("div", "item-milestone-head", iconEl(item.icon), el("p", "item-prompt", item.prompt)),
+    el("p", "item-name", `${item.name} · ${money(item.priceUsd ?? 0)}`),
+  );
+  if (item.note) text.append(el("p", "item-note", item.note));
+  const node = el("article", "item item-milestone fade-in", figure, text);
+  return { node, update: time.set };
+}
+
 function build(item: Item): Built {
   switch (item.variant) {
     case "ribbon":
@@ -176,6 +285,8 @@ function build(item: Item): Built {
       return feature(item);
     case "hero":
       return hero(item);
+    case "milestone":
+      return milestone(item);
     default:
       return card(item);
   }
@@ -221,18 +332,22 @@ export function itemsSection(): HTMLElement {
   // Lay out in catalog order, grouping consecutive "card" variants into a pair.
   let i = 0;
   while (i < ITEMS.length) {
-    if (ITEMS[i].variant === "card") {
+    const item = ITEMS[i];
+    if (item.variant === "tax") {
+      stack.append(taxCard(item)); // self-wired
+      i++;
+    } else if (item.variant === "card") {
       const pair = el("div", "item-pair");
       while (i < ITEMS.length && ITEMS[i].variant === "card") {
         const built = build(ITEMS[i]);
-        wire(ITEMS[i].priceUsd, built.update);
+        wire(ITEMS[i].priceUsd ?? 0, built.update);
         pair.append(built.node);
         i++;
       }
       stack.append(pair);
     } else {
-      const built = build(ITEMS[i]);
-      wire(ITEMS[i].priceUsd, built.update);
+      const built = build(item);
+      wire(item.priceUsd ?? 0, built.update);
       stack.append(built.node);
       i++;
     }

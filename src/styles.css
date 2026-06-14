@@ -721,13 +721,6 @@ body {
   margin-left: 0.12em;
 }
 
-.item-time-sec {
-  margin-left: 0.35rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
 .item-time.is-inline {
   font-size: 1.6rem;
 }
@@ -738,10 +731,6 @@ body {
 
 .item-time.is-hero {
   font-size: clamp(3.2rem, 11vw, 6rem);
-}
-
-.item-time.is-hero .item-time-sec {
-  font-size: 1.05rem;
 }
 
 /* 1) Coffee — slim ribbon. */
@@ -778,6 +767,11 @@ body {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap);
+}
+
+/* An odd trailing card spans the full row instead of leaving a gap. */
+.item-pair > .item:last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 .item-card {
@@ -841,6 +835,45 @@ body {
   color: var(--text-muted);
 }
 
+/* Taxes — feature panel whose bar splits federal vs. California. */
+.tax-bar {
+  display: flex;
+}
+
+.tax-seg {
+  height: 100%;
+}
+
+.tax-seg-fed {
+  background: var(--accent);
+}
+
+.tax-seg-state {
+  background: #74c98e;
+  border-left: 1.5px solid var(--bg-panel);
+}
+
+.tax-breakdown {
+  margin-top: 0.75rem;
+}
+
+.tax-dot {
+  display: inline-block;
+  width: 0.6em;
+  height: 0.6em;
+  border-radius: 50%;
+  margin-right: 0.1em;
+  vertical-align: baseline;
+}
+
+.tax-dot.is-fed {
+  background: var(--accent);
+}
+
+.tax-dot.is-state {
+  background: #74c98e;
+}
+
 /* 5) Car — the full-bleed closer. */
 .item-hero {
   display: flex;
@@ -865,9 +898,48 @@ body {
   margin-top: 0.5rem;
 }
 
+/* 6 & 7) Life milestones — ledger row, time on the left, aside on the right. */
+.item-milestone {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem 1.6rem;
+  border-left: 4px solid var(--accent);
+}
+
+.item-milestone-figure {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.item-milestone-figure .item-ofwork {
+  margin-top: 0.05rem;
+}
+
+.item-milestone-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.item-milestone-head .item-prompt {
+  font-size: 1.05rem;
+}
+
+.item-time.is-mile {
+  font-size: clamp(2.4rem, 7vw, 3.6rem);
+}
+
 @media (max-width: 560px) {
   .item-pair {
     grid-template-columns: 1fr;
+  }
+
+  .item-milestone {
+    grid-template-columns: 1fr;
+    gap: 0.7rem;
   }
 }
 
