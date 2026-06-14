@@ -277,13 +277,15 @@ function milestone(item: Item): Built {
     el("span", "item-ofwork", "of work"),
     r.practice,
   );
-  const text = el(
+  // Title, price, and aside share one left edge; the icon hangs to their left.
+  const body = el(
     "div",
-    "item-milestone-text",
-    el("div", "item-milestone-head", iconEl(item.icon), el("p", "item-prompt", item.prompt)),
+    "item-milestone-body",
+    el("p", "item-prompt", item.prompt),
     el("p", "item-name", `${item.name} · ${money(item.priceUsd ?? 0)}`),
   );
-  if (item.note) text.append(el("p", "item-note", item.note));
+  if (item.note) body.append(el("p", "item-note", item.note));
+  const text = el("div", "item-milestone-text", iconEl(item.icon), body);
   const node = el("article", "item item-milestone", figure, text);
   return { node, update: r.update };
 }

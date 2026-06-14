@@ -716,7 +716,11 @@ body {
 }
 
 .item-time.is-mile {
-  font-size: clamp(2.4rem, 7vw, 3.6rem);
+  /* fixed size + no wrap so "38,217 HOURS" always stays on one line and the
+     comma's descender never collides with a wrapped unit. */
+  font-size: 3.2rem;
+  flex-wrap: nowrap;
+  white-space: nowrap;
 }
 
 /* Coffee — a slim ribbon. Cheap things stay quiet. */
@@ -908,12 +912,14 @@ body {
   color: var(--accent-bright);
 }
 
-/* Life milestones — a ledger row: the figure, then the aside. */
+/* Life milestones — a ledger row: the figure, then the aside. The figure
+   column is a fixed width (not `auto`) so the number's varying length never
+   shifts the aside — every title and price shares one left edge down the page. */
 .item-milestone {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: 16rem 1fr;
   align-items: center;
-  gap: 1.8rem;
+  gap: clamp(1.4rem, 3vw, 2.4rem);
   padding: clamp(1.6rem, 4vw, 2rem);
   border-left: 2px solid var(--accent);
 }
@@ -922,19 +928,30 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  min-width: 0;
 }
 
 .item-milestone-figure .item-ofwork {
   margin-top: 0.2rem;
 }
 
-.item-milestone-head {
+/* Icon hangs to the left; prompt, price, and aside align on one left edge. */
+.item-milestone-text {
   display: flex;
-  align-items: center;
-  gap: 0.65rem;
+  align-items: flex-start;
+  gap: 0.7rem;
 }
 
-.item-milestone-head .item-prompt {
+.item-milestone-text .item-icon {
+  /* nudge the icon down to sit optically centered on the prompt line */
+  margin-top: 0.22rem;
+}
+
+.item-milestone-body {
+  min-width: 0;
+}
+
+.item-milestone-body .item-prompt {
   font-size: 1.15rem;
 }
 
@@ -946,6 +963,12 @@ body {
   .item-milestone {
     grid-template-columns: 1fr;
     gap: 0.9rem;
+  }
+
+  .item-time.is-mile {
+    font-size: clamp(2.2rem, 9vw, 3.2rem);
+    flex-wrap: wrap;
+    white-space: normal;
   }
 }
 
