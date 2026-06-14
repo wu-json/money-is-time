@@ -76,7 +76,7 @@ function ribbon(item: Item): Built {
     time.node,
     el("span", "item-ofwork", "of work"),
   );
-  const node = el("article", "item item-ribbon fade-in", iconEl(item.icon), text, right);
+  const node = el("article", "item item-ribbon", iconEl(item.icon), text, right);
   return { node, update: time.set };
 }
 
@@ -85,7 +85,7 @@ function card(item: Item): Built {
   const time = timeView("is-big");
   const node = el(
     "article",
-    "item item-card fade-in",
+    "item item-card",
     iconEl(item.icon),
     el("p", "item-prompt", item.prompt),
     el("p", "item-name", item.name, el("span", "item-place", ` ${item.place}`)),
@@ -105,7 +105,7 @@ function feature(item: Item): Built {
   const barLabel = el("p", "item-bar-label");
   const node = el(
     "article",
-    "item item-feature fade-in",
+    "item item-feature",
     el(
       "div",
       "item-feature-head",
@@ -140,31 +140,16 @@ function feature(item: Item): Built {
 // 5) Car — the closer. One enormous number, full bleed.
 function hero(item: Item): Built {
   const time = timeView("is-hero");
-  const foot = el("p", "item-ofwork");
   const node = el(
     "article",
-    "item item-hero fade-in",
+    "item item-hero",
     iconEl(item.icon, "is-lg"),
     el("p", "item-prompt", item.prompt),
     el("p", "item-name", `${item.name} · ${money(item.priceUsd ?? 0)}`),
     time.node,
-    foot,
+    el("p", "item-ofwork", "of work"),
   );
-
-  const update = (info: TimeInfo) => {
-    time.set(info);
-    const perMonth = workMinutesPerMonth();
-    if (!info || perMonth <= 0) {
-      foot.textContent = "of work";
-      return;
-    }
-    const months = info.minutes / perMonth;
-    foot.textContent =
-      months >= 1.5
-        ? `of work — about ${Math.round(months)} months of your working life`
-        : "of work";
-  };
-  return { node, update };
+  return { node, update: time.set };
 }
 
 // The calendar day you'd stop "working for the government" if every dollar from
@@ -189,7 +174,7 @@ function taxCard(item: Item): HTMLElement {
 
   const node = el(
     "article",
-    "item item-feature item-tax fade-in",
+    "item item-feature item-tax",
     el(
       "div",
       "item-feature-head",
@@ -215,6 +200,7 @@ function taxCard(item: Item): HTMLElement {
   effect(() => {
     const pay = salary();
     const wage = hourlyWageUsd();
+    const hpw = schedule().hoursPerWeek;
     const fedTax = federalIncomeTax(pay);
     const stateTax = californiaIncomeTax(pay);
     const total = fedTax + stateTax;
@@ -243,12 +229,12 @@ function taxCard(item: Item): HTMLElement {
     const target = (total / wage) * 60;
     if (reduceMotion) {
       shown = target;
-      time.set({ parts: timeParts(target), minutes: target });
+      time.set({ parts: timeParts(target, hpw), minutes: target });
       return;
     }
     cancel = tweenNumber(shown, target, 520, (m) => {
       shown = m;
-      time.set({ parts: timeParts(m), minutes: m });
+      time.set({ parts: timeParts(m, hpw), minutes: m });
     });
   });
 
@@ -273,7 +259,7 @@ function milestone(item: Item): Built {
     el("p", "item-name", `${item.name} · ${money(item.priceUsd ?? 0)}`),
   );
   if (item.note) text.append(el("p", "item-note", item.note));
-  const node = el("article", "item item-milestone fade-in", figure, text);
+  const node = el("article", "item item-milestone", figure, text);
   return { node, update: time.set };
 }
 
@@ -299,6 +285,7 @@ function wire(price: number, render: (info: TimeInfo) => void): void {
   let cancel: () => void = () => {};
   effect(() => {
     const wage = hourlyWageUsd();
+    const hpw = schedule().hoursPerWeek;
     cancel();
     if (wage <= 0) {
       render(null);
@@ -307,12 +294,12 @@ function wire(price: number, render: (info: TimeInfo) => void): void {
     const target = (price / wage) * 60; // minutes of labor
     if (reduceMotion) {
       shown = target;
-      render({ parts: timeParts(target), minutes: target });
+      render({ parts: timeParts(target, hpw), minutes: target });
       return;
     }
     cancel = tweenNumber(shown, target, 520, (m) => {
       shown = m;
-      render({ parts: timeParts(m), minutes: m });
+      render({ parts: timeParts(m, hpw), minutes: m });
     });
   });
 }

@@ -1,39 +1,27 @@
-// Turn a labor-time (in minutes) into human units. The schedule input now only
-// feeds the hourly wage, so for *display* we read durations against a
-// conventional workload: an 8-hour work day, a 40-hour work week. That keeps big
-// numbers legible ("9 weeks" beats "360 hours") without re-deriving anything
-// from the dropped days-per-week field.
+// Turn a labor-time (in minutes) into human units — relative to the user's OWN
+// schedule, never a hard-coded workload. A "week" is exactly the hours/week they
+// entered; a "year" is 52 of those. So "8 years" means literally 8 years of
+// their gross pay (price ÷ salary), independent of how many hours they grind;
+// minutes and hours stay their real labor time. We deliberately omit a "day"
+// unit, since that would smuggle in an 8h-day assumption.
 
 export type TimePart = { value: number; unit: string };
 
-const UNITS = [
-  { min: 124800, one: "year", many: "years" }, // 52 × 40h
-  { min: 2400, one: "week", many: "weeks" }, //      40h
-  { min: 480, one: "day", many: "days" }, //          8h
-  { min: 60, one: "hr", many: "hrs" },
-  { min: 1, one: "min", many: "min" },
-];
-
-// The largest non-zero unit, plus the next unit down if it's non-zero — so we
-// read "1 week 4 days" or "23 min", never "9 weeks 24 min".
-export function timeParts(totalMinutes: number): TimePart[] {
+// We show only the single dominant unit, so each call returns one part.
+export function timeParts(totalMinutes: number, hoursPerWeek: number): TimePart[] {
   const total = Math.max(0, Math.round(totalMinutes));
-  const idx = UNITS.findIndex((u) => total >= u.min);
-  if (idx === -1) return [{ value: 0, unit: "min" }];
-
-  const primary = UNITS[idx];
-  const pv = Math.floor(total / primary.min);
-  const rem = total - pv * primary.min;
-  const parts: TimePart[] = [
-    { value: pv, unit: pv === 1 ? primary.one : primary.many },
+  const week = hoursPerWeek > 0 ? hoursPerWeek * 60 : Infinity;
+  const units = [
+    { min: week * 52, one: "year", many: "years" },
+    { min: week, one: "week", many: "weeks" },
+    { min: 60, one: "hr", many: "hrs" },
+    { min: 1, one: "min", many: "min" },
   ];
 
-  const next = UNITS[idx + 1];
-  if (next) {
-    const sv = Math.floor(rem / next.min);
-    if (sv > 0) parts.push({ value: sv, unit: sv === 1 ? next.one : next.many });
-  }
-  return parts;
+  const unit = units.find((u) => total >= u.min);
+  if (!unit) return [{ value: 0, unit: "min" }];
+  const value = Math.floor(total / unit.min);
+  return [{ value, unit: value === 1 ? unit.one : unit.many }];
 }
 
 // Price formatter: cents only when they exist ($6.25, but $3,300 not $3,300.00).

@@ -1,22 +1,49 @@
-/* Color + spacing tokens. White page, black text, a single money-green accent. */
+/* Design tokens. Light, airy editorial base; deep ink surfaces for the
+   big-ticket "punch" cards. Fraunces for display, Inter for data + UI. */
 :root {
-  --bg: #ffffff;
+  --bg: #f5f8f6;
   --bg-panel: #ffffff;
-  --bg-elevated: #f5f7f5;
-  --border: #e3e7e3;
+  --bg-elevated: #eef2ef;
+  --border: #e2e7e3;
+  --hairline: #edf0ed;
   --text: #0a0e0a;
-  --text-muted: #6b746b;
+  --text-muted: #69736c;
+
   --accent: #12a150; /* money green */
+  --accent-deep: #0c7a3c;
+  --accent-bright: #34d27f; /* numbers on dark */
   --accent-soft: #12a15014;
 
-  --radius: 14px;
+  /* Dark surfaces for the heavy hitters. */
+  --ink: #0c1411;
+  --ink-2: #0a1c14; /* slightly greener deep */
+  --on-dark: #f2f6f3;
+  --on-dark-muted: #8fa097;
+  --on-dark-line: rgba(255, 255, 255, 0.12);
+
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --radius: 16px;
+  --radius-sm: 11px;
   --gap: 1rem;
-  --max-width: 880px;
+  --max-width: 920px;
+
+  --shadow-sm: 0 1px 2px rgba(10, 20, 14, 0.04), 0 2px 8px rgba(10, 20, 14, 0.05);
+  --shadow-md: 0 6px 18px rgba(10, 20, 14, 0.06), 0 18px 40px rgba(10, 20, 14, 0.05);
+  --shadow-dark: 0 2px 8px rgba(6, 26, 16, 0.18), 0 18px 44px rgba(6, 26, 16, 0.28);
 
   --ease: cubic-bezier(0.22, 1, 0.36, 1);
   --dur: 240ms;
 
   color-scheme: light;
+}
+
+/* Sans utility — applied to numbers, labels, and small UI throughout. */
+.sans,
+.tabular {
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 1, "cv05" 1;
 }
 
 *,
@@ -33,11 +60,12 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family:
-    "Fraunces", Georgia, "Times New Roman", "Noto Serif", serif;
+  font-family: var(--font-display);
   font-optical-sizing: auto;
   line-height: 1.5;
   min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Layout ------------------------------------------------------------------ */
@@ -96,6 +124,7 @@ body {
   gap: 0.7rem;
   color: var(--text-muted);
   text-decoration: none;
+  font-family: var(--font-sans);
   font-size: clamp(0.66rem, 1.3vw, 0.74rem);
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -304,15 +333,17 @@ body {
 .layout {
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
-  padding-bottom: 3rem;
+  gap: 2.25rem;
+  padding-top: 1.5rem;
+  padding-bottom: 6rem;
 }
 
 .panel {
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: var(--shadow-sm);
 }
 
 .grid {
@@ -613,40 +644,81 @@ body {
   }
 }
 
-/* Items — goods as time ---------------------------------------------------- */
+/* Inter for the data + form UI; Fraunces stays for display copy. */
+.field-label,
+.field-sublabel,
+.field-suffix,
+.slider-value,
+.slider-scale,
+.field-input,
+.segmented-title,
+.segmented-blurb {
+  font-family: var(--font-sans);
+}
+
+.field-label {
+  letter-spacing: 0;
+}
+
+.segmented-title {
+  letter-spacing: -0.01em;
+}
+
+/* Items — goods as time ===================================================== */
 .items {
   display: flex;
   flex-direction: column;
-  gap: var(--gap);
+  gap: 1.1rem;
 }
 
 .items-intro {
-  margin: 0.5rem 0 0.25rem;
+  margin: 0.5rem 0 0.6rem;
 }
 
 .items-eyebrow {
   margin: 0;
-  font-size: 0.78rem;
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
   font-weight: 600;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--accent);
 }
 
 .items-title {
-  margin: 0.35rem 0 0;
-  font-size: clamp(1.45rem, 3.6vw, 2.1rem);
-  font-weight: 600;
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.7rem, 4.4vw, 2.5rem);
+  font-weight: 500;
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.08;
   color: var(--text);
 }
 
-/* Shared card chrome + atoms. */
+/* Shared atoms ------------------------------------------------------------- */
 .item {
+  position: relative;
   background: var(--bg-panel);
   border: 1px solid var(--border);
   border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+/* Reveal on scroll (added by JS). */
+.item.reveal {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.item.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.6s var(--ease),
+    transform 0.6s var(--ease);
 }
 
 .item-icon {
@@ -655,26 +727,31 @@ body {
 }
 
 .item-icon svg {
-  width: 26px;
-  height: 26px;
+  width: 24px;
+  height: 24px;
   display: block;
 }
 
 .item-icon.is-lg svg {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
 }
 
 .item-prompt {
   margin: 0;
+  font-family: var(--font-display);
   font-style: italic;
-  font-weight: 500;
+  font-weight: 400;
+  font-size: 1.1rem;
+  letter-spacing: -0.01em;
   color: var(--text);
 }
 
 .item-name {
-  margin: 0.2rem 0 0;
-  font-size: 0.92rem;
+  margin: 0.28rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.86rem;
+  font-weight: 500;
   color: var(--text-muted);
 }
 
@@ -683,28 +760,32 @@ body {
 }
 
 .item-note {
-  margin: 0.45rem 0 0;
-  font-size: 0.8rem;
-  font-style: italic;
-  color: var(--text-muted);
-}
-
-.item-ofwork {
-  margin: 0.35rem 0 0;
-  font-size: 0.85rem;
+  margin: 0.55rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
   font-weight: 500;
   color: var(--text-muted);
 }
 
-/* The time readout: big tabular value, smaller unit, muted secondary. */
+.item-ofwork {
+  margin: 0.3rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text-muted);
+}
+
+/* The time readout — the hero number, in tabular sans. */
 .item-time {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  color: var(--accent);
+  font-family: var(--font-sans);
+  color: var(--accent-deep);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.02;
+  letter-spacing: -0.03em;
+  line-height: 1;
 }
 
 .item-time.is-empty {
@@ -716,34 +797,37 @@ body {
 }
 
 .item-time-unit {
-  font-size: 0.45em;
+  margin-left: 0.45em;
+  font-size: 0.3em;
   font-weight: 600;
-  margin-left: 0.12em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  align-self: center;
 }
 
 .item-time.is-inline {
-  font-size: 1.6rem;
+  font-size: 1.75rem;
 }
 
 .item-time.is-big {
-  font-size: clamp(2.1rem, 5.5vw, 2.9rem);
+  font-size: clamp(2.3rem, 6vw, 3.1rem);
 }
 
 .item-time.is-hero {
-  font-size: clamp(3.2rem, 11vw, 6rem);
+  font-size: clamp(3.6rem, 12vw, 6.5rem);
 }
 
-/* 1) Coffee — slim ribbon. */
+.item-time.is-mile {
+  font-size: clamp(2.6rem, 7.5vw, 4rem);
+}
+
+/* Light cards — coffee ribbon + the everyday grid -------------------------- */
 .item-ribbon {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.25rem;
-}
-
-.item-ribbon .item-icon svg {
-  width: 24px;
-  height: 24px;
+  padding: 1.05rem 1.35rem;
 }
 
 .item-ribbon-text {
@@ -759,10 +843,9 @@ body {
 }
 
 .item-ribbon-right .item-ofwork {
-  margin-top: 0.1rem;
+  margin-top: 0.15rem;
 }
 
-/* 2 & 3) Brunch / DoorDash — paired vertical cards. */
 .item-pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -777,36 +860,93 @@ body {
 .item-card {
   display: flex;
   flex-direction: column;
-  padding: 1.4rem;
+  padding: 1.5rem;
 }
 
 .item-card .item-icon {
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.7rem;
 }
 
 .item-card .item-time {
-  margin-top: 0.85rem;
+  margin-top: 1rem;
+}
+
+.item-card .item-ofwork {
+  margin-top: 0.5rem;
+}
+
+/* Tactile hover for the small light cards. */
+.item-card:hover,
+.item-ribbon:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Dark "punch" cards — rent, taxes, car, milestones ------------------------ */
+.item-feature,
+.item-hero,
+.item-milestone {
+  color: var(--on-dark);
+  background:
+    radial-gradient(125% 145% at 0% 0%, rgba(52, 210, 127, 0.13), transparent 55%),
+    linear-gradient(158deg, var(--ink-2), var(--ink));
+  border-color: rgba(255, 255, 255, 0.06);
+  box-shadow: var(--shadow-dark);
+}
+
+.item-feature .item-prompt,
+.item-hero .item-prompt,
+.item-milestone .item-prompt {
+  color: var(--on-dark);
+}
+
+.item-feature .item-name,
+.item-hero .item-name,
+.item-milestone .item-name,
+.item-feature .item-ofwork,
+.item-hero .item-ofwork,
+.item-milestone .item-ofwork,
+.item-feature .item-note,
+.item-hero .item-note,
+.item-milestone .item-note {
+  color: var(--on-dark-muted);
+}
+
+.item-feature .item-icon,
+.item-hero .item-icon,
+.item-milestone .item-icon {
+  color: var(--accent-bright);
+}
+
+.item-feature .item-time,
+.item-hero .item-time,
+.item-milestone .item-time {
+  color: var(--accent-bright);
+}
+
+.item-feature .item-time-unit,
+.item-hero .item-time-unit,
+.item-milestone .item-time-unit {
+  color: var(--on-dark-muted);
 }
 
 /* 4) Rent — feature panel with a share-of-month bar. */
 .item-feature {
-  padding: 1.6rem;
-  background: linear-gradient(180deg, #ffffff, #f6faf7);
-  border-color: #d9e6dd;
+  padding: 1.8rem;
 }
 
 .item-feature-head {
   display: flex;
   align-items: flex-start;
-  gap: 0.85rem;
+  gap: 0.9rem;
 }
 
 .item-feature-time {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  gap: 0.55rem;
-  margin-top: 1rem;
+  gap: 0.6rem;
+  margin-top: 1.15rem;
 }
 
 .item-feature-time .item-ofwork {
@@ -814,28 +954,28 @@ body {
 }
 
 .item-bar {
-  margin-top: 1.1rem;
-  height: 10px;
+  margin-top: 1.2rem;
+  height: 9px;
   border-radius: 999px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.1);
   overflow: hidden;
 }
 
 .item-bar-fill {
   height: 100%;
   width: 0;
-  background: var(--accent);
+  background: var(--accent-bright);
   border-radius: 999px;
 }
 
 .item-bar-label {
-  margin: 0.55rem 0 0;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  margin: 0.65rem 0 0;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  color: var(--on-dark-muted);
 }
 
-/* Taxes — feature panel whose bar splits federal vs. California. */
+/* Taxes — feature whose bar splits federal vs. California. */
 .tax-bar {
   display: flex;
 }
@@ -845,33 +985,33 @@ body {
 }
 
 .tax-seg-fed {
-  background: var(--accent);
+  background: var(--accent-bright);
 }
 
 .tax-seg-state {
-  background: #74c98e;
-  border-left: 1.5px solid var(--bg-panel);
+  background: #1f7a48;
+  border-left: 1.5px solid var(--ink);
 }
 
 .tax-breakdown {
-  margin-top: 0.75rem;
+  margin-top: 0.9rem;
 }
 
 .tax-dot {
   display: inline-block;
-  width: 0.6em;
-  height: 0.6em;
+  width: 0.62em;
+  height: 0.62em;
   border-radius: 50%;
-  margin-right: 0.1em;
+  margin-right: 0.18em;
   vertical-align: baseline;
 }
 
 .tax-dot.is-fed {
-  background: var(--accent);
+  background: var(--accent-bright);
 }
 
 .tax-dot.is-state {
-  background: #74c98e;
+  background: #2f9e63;
 }
 
 /* 5) Car — the full-bleed closer. */
@@ -880,32 +1020,30 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2.1rem 1.6rem 2.3rem;
-  background: linear-gradient(180deg, #ffffff, #f3faf6);
-  border-color: #d3e6d8;
+  padding: 2.5rem 1.6rem 2.7rem;
 }
 
 .item-hero .item-icon {
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 }
 
 .item-hero .item-prompt {
-  font-size: 1.05rem;
+  font-size: 1.15rem;
 }
 
 .item-hero .item-time {
   justify-content: center;
-  margin-top: 0.5rem;
+  margin-top: 0.6rem;
 }
 
-/* 6 & 7) Life milestones — ledger row, time on the left, aside on the right. */
+/* 6 & 7) Life milestones — ledger row, time left, aside right. */
 .item-milestone {
   display: grid;
   grid-template-columns: auto 1fr;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1.5rem 1.6rem;
-  border-left: 4px solid var(--accent);
+  gap: 1.6rem;
+  padding: 1.6rem 1.8rem;
+  border-left: 3px solid var(--accent-bright);
 }
 
 .item-milestone-figure {
@@ -915,7 +1053,7 @@ body {
 }
 
 .item-milestone-figure .item-ofwork {
-  margin-top: 0.05rem;
+  margin-top: 0.1rem;
 }
 
 .item-milestone-head {
@@ -925,11 +1063,7 @@ body {
 }
 
 .item-milestone-head .item-prompt {
-  font-size: 1.05rem;
-}
-
-.item-time.is-mile {
-  font-size: clamp(2.4rem, 7vw, 3.6rem);
+  font-size: 1.1rem;
 }
 
 @media (max-width: 560px) {
@@ -939,7 +1073,7 @@ body {
 
   .item-milestone {
     grid-template-columns: 1fr;
-    gap: 0.7rem;
+    gap: 0.8rem;
   }
 }
 
