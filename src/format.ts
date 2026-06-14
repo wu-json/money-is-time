@@ -42,6 +42,25 @@ export function practiceEstimate(
   return { value: `~ ${v}`, unit: `work ${v === "1" ? "week" : "weeks"}` };
 }
 
+// Labor-time as the user's *work* weeks (or work years past one) — the same
+// "work week = the hours you entered" unit as practiceEstimate, but always
+// returns a figure (no null floor) for cases where weeks is the headline, like
+// the free-and-clear readout. Below one work-week, hours read clearer, so the
+// caller is expected to fall back to primaryTime there.
+export function laborWeeks(
+  totalMinutes: number,
+  hoursPerWeek: number,
+): Primary {
+  if (hoursPerWeek <= 0) return primaryTime(totalMinutes);
+  const weeks = Math.max(0, totalMinutes) / 60 / hoursPerWeek;
+  if (weeks >= 52) {
+    const v = approx(weeks / 52);
+    return { value: v, unit: v === "1" ? "work year" : "work years" };
+  }
+  const v = approx(weeks);
+  return { value: v, unit: v === "1" ? "work week" : "work weeks" };
+}
+
 // Price formatter: cents only when they exist ($6.25, but $3,300 not $3,300.00).
 export function money(n: number): string {
   return new Intl.NumberFormat("en-US", {

@@ -11,7 +11,7 @@ import { el } from "../dom";
 import { effect } from "../store";
 import { tweenNumber } from "../tween";
 import { netHourlyWageUsd, schedule } from "../state";
-import { primaryTime, money } from "../format";
+import { primaryTime, laborWeeks, money } from "../format";
 import { MONTHLY_COSTS } from "../data/monthly";
 
 const reduceMotion = window.matchMedia(
@@ -156,17 +156,25 @@ export function monthlySection(): HTMLElement {
     const month = monthMinutes(hpw);
     const free = freeMinutes();
 
-    const setTime = (r: Row, minutes: number) => {
-      const p = primaryTime(minutes);
+    // Bills read in concrete hours; free time is the payoff, so it reads in the
+    // user's work-weeks (a far more graspable "162 hours → 4 work weeks") — until
+    // it's under a week, where raw hours tell the story better.
+    const freeWeeks = free / 60 / hpw;
+    const readout = (minutes: number, asWeeks: boolean) =>
+      asWeeks && freeWeeks >= 1 ? laborWeeks(minutes, hpw) : primaryTime(minutes);
+
+    const setTime = (r: Row, minutes: number, asWeeks = false) => {
+      const p = readout(minutes, asWeeks);
       r.val.textContent = p.value;
       r.unit.textContent = ` ${p.unit}`;
     };
     for (let i = 0; i < N; i++) setTime(rows[i], shown[i]);
-    setTime(rows[FREE_I], free);
+    setTime(rows[FREE_I], free, true);
 
     const idx = hover ?? FREE_I;
-    const minutes = idx === FREE_I ? free : shown[idx];
-    const p = primaryTime(minutes);
+    const isFree = idx === FREE_I;
+    const minutes = isFree ? free : shown[idx];
+    const p = readout(minutes, isFree);
     centerVal.textContent = p.value;
     centerUnit.textContent = ` ${p.unit}`;
     centerCap.textContent =

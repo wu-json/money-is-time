@@ -14,7 +14,7 @@ import { salary } from "../state";
 const groups = new Intl.NumberFormat("en-US");
 
 const LO = 1_000; // salary at the first non-zero slider step
-const HI = 100_000_000; // salary at the far right (and the typed-entry ceiling)
+const HI = 25_000_000; // salary at the far right (and the typed-entry ceiling)
 const STEPS = 1000; // slider runs 0..STEPS in integer notches
 
 // Round to ~3 significant figures so dragging lands on clean numbers
