@@ -1,9 +1,10 @@
-// Boot. The reactive spine lives in ./store.ts; here we mount the real
-// salary/schedule inputs into #controls. Phase 3 fills #items from the catalog.
+// Boot. The reactive spine lives in ./store.ts; here we mount the salary/
+// schedule inputs into #controls and the goods-as-time catalog into #items.
 
 import { el } from "./dom";
 import { salaryInput } from "./components/salaryInput";
 import { scheduleSelector } from "./components/scheduleSelector";
+import { itemsSection } from "./components/itemsSection";
 
 function mountControls(): void {
   const controls = document.querySelector<HTMLElement>("#controls");
@@ -16,4 +17,11 @@ function mountControls(): void {
   controls.append(form);
 }
 
+function mountItems(): void {
+  const items = document.querySelector<HTMLElement>("#items");
+  if (!items) return;
+  items.append(itemsSection());
+}
+
 mountControls();
+mountItems();
