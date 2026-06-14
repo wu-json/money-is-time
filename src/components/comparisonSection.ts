@@ -10,7 +10,7 @@ import { effect } from "../store";
 import { tweenNumber } from "../tween";
 import { hourlyWageUsd, schedule } from "../state";
 import { primaryTime, laborWeeks, money, type Primary } from "../format";
-import { PEOPLE, STANDARD_WORK_HOURS, type Person } from "../data/people";
+import { PEOPLE, WEEKS_PER_YEAR, type Person } from "../data/people";
 
 const reduceMotion = window.matchMedia(
   "(prefers-reduced-motion: reduce)",
@@ -53,23 +53,35 @@ export function comparisonSection(): HTMLElement {
 
   // --- Rates row -----------------------------------------------------------
   const yourRate = el("span", "compare-side-rate tabular", "—");
+  // Your own weekly hours, to mirror the assumption shown on their side.
+  const yourHours = el("p", "compare-side-hours");
   const youSide = el(
     "div",
     "compare-side",
     el("span", "compare-side-label", "Your hour"),
     yourRate,
-    el("span", "compare-side-cap", "after your salary & schedule"),
+    el("span", "compare-side-cap", "from your salary & schedule"),
+    yourHours,
   );
 
   const theirRate = el("span", "compare-side-rate tabular", "—");
   const theirName = el("span", "compare-side-label", "");
   const theirCap = el("span", "compare-side-cap", "");
+  // The hours assumption behind their hourly — the number, plus a basis that
+  // links to a source when one exists. Rebuilt per person in render().
+  const theirHours = el("p", "compare-side-hours");
+  // Clickable provenance for the headline figure — opens the source in a new tab.
+  const theirSource = el("a", "compare-side-source") as HTMLAnchorElement;
+  theirSource.target = "_blank";
+  theirSource.rel = "noopener noreferrer";
   const themSide = el(
     "div",
     "compare-side is-them",
     theirName,
     theirRate,
     theirCap,
+    theirHours,
+    theirSource,
   );
 
   const rates = el(
@@ -98,11 +110,43 @@ export function comparisonSection(): HTMLElement {
     PEOPLE.find((p) => p.id === DEFAULT_ID) ?? PEOPLE[PEOPLE.length - 1];
   let userHourly = 0;
   let hpw = 40;
+  let userWeeklyHours = 40; // the schedule's actual hours, for the readout
   let shownMult = 0;
   let cancel: () => void = () => {};
 
   function paintMult(value: number): void {
     multValue.textContent = fmtMult(value);
+  }
+
+  // A weekly-hours line: a bold green figure ("≈ 50 h/week") followed by a quiet
+  // muted basis. `basisHref` makes the basis a subtle link to a source.
+  function hoursFig(weekly: number): HTMLElement {
+    return el("span", "compare-hours-fig", `≈ ${weekly} h/week`);
+  }
+  function renderTheirHours(p: Person): void {
+    const note = el("span", "compare-hours-note", " · ");
+    if (p.hoursSource) {
+      const a = el("a", "compare-hours-source", p.hoursBasis) as HTMLAnchorElement;
+      a.href = p.hoursSource.url;
+      a.target = "_blank";
+      a.rel = "noopener noreferrer";
+      note.append(a);
+    } else {
+      note.append(p.hoursBasis);
+    }
+    theirHours.replaceChildren(hoursFig(p.weeklyHours), note);
+  }
+  function renderYourHours(): void {
+    if (userHourly <= 0 || userWeeklyHours <= 0) {
+      yourHours.replaceChildren();
+      yourHours.classList.add("is-hidden");
+      return;
+    }
+    yourHours.classList.remove("is-hidden");
+    yourHours.replaceChildren(
+      hoursFig(userWeeklyHours),
+      el("span", "compare-hours-note", " · your schedule"),
+    );
   }
 
   function render(): void {
@@ -114,6 +158,10 @@ export function comparisonSection(): HTMLElement {
 
     theirName.textContent = selected.name;
     theirCap.textContent = selected.note ?? selected.role;
+    theirSource.href = selected.source.url;
+    theirSource.textContent = `Source: ${selected.source.label}`;
+    renderTheirHours(selected);
+    renderYourHours();
 
     cancel();
 
@@ -130,7 +178,8 @@ export function comparisonSection(): HTMLElement {
     mult.classList.remove("is-hidden");
     sub.classList.remove("is-hidden");
 
-    const personHourly = selected.annualUsd / STANDARD_WORK_HOURS;
+    const personHourly =
+      selected.annualUsd / (selected.weeklyHours * WEEKS_PER_YEAR);
     yourRate.textContent = rate(userHourly);
     theirRate.textContent = rate(personHourly);
 
@@ -139,9 +188,10 @@ export function comparisonSection(): HTMLElement {
     const targetMult = theyEarnMore ? ratio : 1 / ratio;
 
     // Hours of labor to earn ONE of the higher earner's hours, told in the
-    // lower earner's own schedule.
+    // lower earner's own schedule — yours if you're the one working, theirs (the
+    // assumed weekly hours) if they are.
     const hoursToMatch = targetMult;
-    const t = timeReadout(hoursToMatch, theyEarnMore ? hpw : 40);
+    const t = timeReadout(hoursToMatch, theyEarnMore ? hpw : selected.weeklyHours);
 
     if (theyEarnMore) {
       lead.textContent = `${selected.name}'s hour is worth`;
@@ -175,7 +225,8 @@ export function comparisonSection(): HTMLElement {
   // Re-render whenever the user's hourly (salary ÷ schedule) changes.
   effect(() => {
     userHourly = hourlyWageUsd();
-    hpw = schedule().hoursPerWeek || 40;
+    userWeeklyHours = schedule().hoursPerWeek;
+    hpw = userWeeklyHours || 40;
     render();
   });
 
@@ -190,8 +241,8 @@ export function comparisonSection(): HTMLElement {
       el(
         "p",
         "items-note",
-        "Everyone's pay, put on the same full-time clock. Pick someone and see " +
-          "the gap — as a plain multiple, and as the hours you'd trade to match it.",
+        "Everyone's pay, measured against the hours they actually work. Pick someone " +
+          "and see the gap — as a plain multiple, and as the hours you'd trade to match it.",
       ),
     ),
     people,

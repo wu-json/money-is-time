@@ -1273,6 +1273,51 @@ body {
   color: var(--muted);
 }
 
+/* The meta stack under each rate: hours figure, basis, and source. The hours
+   figure is the one green accent; basis and source are quiet, muted links so the
+   block reads calm instead of a wall of green. */
+.compare-side-hours {
+  margin: 0;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.compare-side-hours.is-hidden {
+  display: none;
+}
+
+.compare-hours-fig {
+  font-weight: 600;
+  color: var(--accent-ink);
+  white-space: nowrap;
+}
+
+.compare-hours-note {
+  color: var(--muted);
+}
+
+.compare-side-source {
+  font-size: 0.68rem;
+  font-weight: 500;
+}
+
+.compare-hours-source,
+.compare-side-source {
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--faint);
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.compare-hours-source:hover,
+.compare-hours-source:focus-visible,
+.compare-side-source:hover,
+.compare-side-source:focus-visible {
+  color: var(--accent-ink);
+  border-bottom-color: var(--accent-ink);
+}
+
 .compare-vs {
   align-self: center;
   flex: none;
@@ -1327,9 +1372,9 @@ body {
 }
 
 .compare-mult-x {
-  font-size: 0.42em;
-  font-weight: 600;
-  margin-left: 0.12em;
+  font-size: 0.6em;
+  font-weight: 700;
+  margin-left: 0.1em;
   align-self: center;
 }
 

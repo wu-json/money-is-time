@@ -3,19 +3,29 @@
 // estimates (total pay, not just base salary, where that's the famous number);
 // the point is the order of magnitude, not the cents.
 //
-// To put everyone on one clock we divide each annual figure by a standard
-// full-time year (2,080 hours = 40h × 52). It's a deliberate fiction for the
-// people who don't punch a clock — but it's the same fiction for everyone, so
-// the comparison stays fair.
+// To turn a yearly figure into an hourly one we divide by the hours each person
+// actually works — or says they do — not a flat 40-hour week. A full-time grind
+// is 40 h; a CEO's is ~62 (Harvard's time-use study); Musk claims 80–100. So the
+// "hourly" reflects real effort, and every assumption is shown in the UI with its
+// basis. Hours without a hard source are honest estimates, labeled as such.
 
-export const STANDARD_WORK_HOURS = 2080;
+// Weeks in a year — the bridge from a weekly-hours assumption to annual hours.
+export const WEEKS_PER_YEAR = 52;
+
+// A credible public landing page, shown as a clickable link so a claim is
+// checkable, not asserted. Used both for the dollar figure and the hours basis.
+export type Source = { label: string; url: string };
 
 export type Person = {
   id: string;
   name: string;
   role: string; // the small descriptor under the figure
   annualUsd: number;
+  weeklyHours: number; // hours worked per week — actual, claimed, or estimated
+  hoursBasis: string; // short, plain-language basis for the hours, shown in the UI
+  hoursSource?: Source; // citation for the hours claim, when a hard one exists
   note?: string; // optional caveat (e.g. wealth vs. wages)
+  source: Source; // citation for the dollar figure
 };
 
 // Ordered low → high so the selector reads as a climb.
@@ -25,48 +35,124 @@ export const PEOPLE: Person[] = [
     name: "Minimum-wage worker",
     role: "U.S. federal floor, $7.25/hr full-time",
     annualUsd: 15_080,
+    weeklyHours: 40,
+    hoursBasis: "Full-time — 40 h/week",
+    source: {
+      label: "U.S. Dept. of Labor",
+      url: "https://www.dol.gov/general/topic/wages/minimumwage",
+    },
   },
   {
     id: "median",
     name: "The median American",
     role: "Typical full-time worker",
-    annualUsd: 61_000,
+    // BLS 2025 median usual weekly earnings ($1,204) × 52 weeks.
+    annualUsd: 62_600,
+    weeklyHours: 40,
+    hoursBasis: "Full-time — 40 h/week",
+    source: {
+      label: "BLS, 2025 usual weekly earnings",
+      url: "https://www.bls.gov/news.release/wkyeng.htm",
+    },
   },
   {
     id: "senator",
     name: "A U.S. Senator",
     role: "Congressional salary",
     annualUsd: 174_000,
+    weeklyHours: 65,
+    hoursBasis: "Congressional Mgmt. Foundation — ~70 h in session, ~59 in district",
+    hoursSource: {
+      label: "Roll Call — Congress's 70-hour week",
+      url: "https://rollcall.com/2014/10/28/all-work-congress-averaging-70-hour-work-week/",
+    },
+    source: {
+      label: "U.S. Senate salary history",
+      url: "https://www.senate.gov/senators/SenateSalariesSince1789.htm",
+    },
   },
   {
     id: "president",
     name: "The U.S. President",
     role: "Salary of the office",
     annualUsd: 400_000,
+    weeklyHours: 90,
+    hoursBasis: "Accounts vary — roughly 8–18 h/day, 7 days (estimate)",
+    hoursSource: {
+      label: "Zippia — the president's hours",
+      url: "https://www.zippia.com/answers/how-many-hours-does-the-president-work/",
+    },
+    source: {
+      label: "Federal officials' salaries",
+      url: "https://en.wikipedia.org/wiki/Salaries_of_United_States_federal_executive_officials",
+    },
   },
   {
     id: "ceo",
     name: "A typical big-company CEO",
-    role: "Median S&P 500 pay package",
-    annualUsd: 16_300_000,
+    role: "Average S&P 500 pay package",
+    // AFL-CIO Executive Paywatch 2025 (2024 data): average S&P 500 CEO total comp.
+    annualUsd: 18_900_000,
+    weeklyHours: 62,
+    hoursBasis: "Harvard CEO time-use study — ~62.5 h/week",
+    hoursSource: {
+      label: "HBR — How CEOs Manage Time",
+      url: "https://hbr.org/2018/07/how-ceos-manage-time",
+    },
+    source: {
+      label: "AFL-CIO Executive Paywatch 2025",
+      url: "https://aflcio.org/paywatch",
+    },
   },
   {
     id: "lebron",
     name: "LeBron James",
     role: "NBA salary + endorsements",
     annualUsd: 128_000_000,
+    weeklyHours: 50,
+    hoursBasis: "Trains 6 days/week year-round — games, travel & film on top (estimate)",
+    hoursSource: {
+      label: "SI — his training regimen",
+      url: "https://www.si.com/nba/lebron-james-details-intense-weekly-offseason-training-regimen",
+    },
+    source: {
+      label: "Forbes profile",
+      url: "https://www.forbes.com/profile/lebron-james/",
+    },
   },
   {
     id: "swift",
     name: "Taylor Swift",
     role: "A recent touring year",
-    annualUsd: 130_000_000,
+    // Forbes estimate of Swift's 2024 pretax earnings (the Eras Tour year).
+    annualUsd: 400_000_000,
+    weeklyHours: 60,
+    hoursBasis: "A tour year — months of 6-day prep, then 3.5-hour shows (estimate)",
+    hoursSource: {
+      label: "Time — her Eras prep",
+      url: "https://time.com/6343028/taylor-swift-workout-routine-eras-tour/",
+    },
+    source: {
+      label: "Forbes profile",
+      url: "https://www.forbes.com/profile/taylor-swift/",
+    },
   },
   {
     id: "musk",
     name: "Elon Musk",
     role: "Net worth gained in 2021",
-    annualUsd: 95_000_000_000,
+    // Bloomberg Billionaires Index: ~$121B added to his net worth over 2021.
+    annualUsd: 121_000_000_000,
+    weeklyHours: 90,
+    hoursBasis: "By his own account — 80–100 h/week",
+    hoursSource: {
+      label: "CNBC — Musk on his workweek",
+      url: "https://www.cnbc.com/2018/11/05/elon-musk-on-working-120-hours-a-week-youll-go-bonkers.html",
+    },
     note: "Wealth, not wages — but it's the same clock.",
+    source: {
+      label: "Bloomberg Billionaires Index",
+      url: "https://www.bloomberg.com/billionaires/profiles/elon-r-musk/",
+    },
   },
 ];
