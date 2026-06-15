@@ -1232,6 +1232,13 @@ body {
   color: var(--accent-ink);
 }
 
+/* The expense rows reserve a trailing remove button (24px + the row gap); the
+   free row has none, so offset its time by the same amount to keep the DAYS
+   value column-aligned with the HOURS above it. */
+.donut-row.is-freerow .donut-row-time {
+  margin-right: calc(24px + 0.85rem);
+}
+
 .donut-row-text {
   display: flex;
   flex-direction: column;
@@ -1267,15 +1274,18 @@ body {
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--ink);
-  min-width: 1.6ch;
+  min-width: 2.4ch;
   text-align: right;
 }
 
 .donut-row-unit {
+  flex: none;
+  min-width: 4.5ch;
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-align: left;
   color: var(--muted);
 }
 
