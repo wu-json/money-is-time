@@ -1016,6 +1016,19 @@ body {
   gap: clamp(1.75rem, 4vw, 2.5rem);
 }
 
+/* The ring is the second view of the month; its intro line sits tight above it,
+   not a full section-gap away, so they read as one block. */
+.monthly-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.1rem, 3vw, 1.6rem);
+}
+
+.monthly-bridge {
+  margin: 0;
+  max-width: 52ch;
+}
+
 .donut-grid {
   display: grid;
   grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr);
@@ -1205,6 +1218,102 @@ body {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--muted);
+}
+
+/* The month as a calendar — the freedom-day story before the ring. A grey run of
+   bill days, the deep-green freedom day, then the pale-green days that are yours. */
+.freedom-cal {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  width: 100%;
+  max-width: 372px;
+  margin-inline: auto;
+}
+
+.freedom-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+}
+
+/* Bill days are a solid, claimed block — the run of the month already spent. */
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: #e4e0d4;
+  transition: background var(--dur) var(--ease);
+}
+
+.cal-day-num {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: #9b988d;
+}
+
+/* The days that are yours — calm green, lit against the bill block. */
+.cal-day.is-free {
+  background: #d7ece1;
+}
+
+.cal-day.is-free .cal-day-num {
+  color: var(--accent-ink);
+}
+
+/* The turn: the day you stop covering bills and start earning for yourself. */
+.cal-day.is-freedom {
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.cal-day.is-freedom .cal-day-num {
+  color: #fff;
+  font-weight: 700;
+}
+
+.cal-day.is-empty {
+  background: var(--sink);
+}
+
+.cal-day.is-empty .cal-day-num {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+/* Key — three swatches that name each band and read out the split in days. */
+.freedom-cal-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem 1.15rem;
+}
+
+.cal-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.cal-key-sw {
+  flex: none;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  background: #e4e0d4;
+}
+
+.cal-key-sw.is-free {
+  background: #d7ece1;
+}
+
+.cal-key-sw.is-freedom {
+  background: var(--accent);
 }
 
 @media (max-width: 620px) {

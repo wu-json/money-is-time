@@ -59,7 +59,7 @@ export function topbar(): HTMLElement {
     ),
     link(
       "topbar-blog",
-      "https://www.jasonwu.ink/",
+      "https://www.jasonwu.ink/signals/2026-06-14-money-is-time",
       "Read the blog post",
       ICON_BLOSSOM,
       "Blog",
