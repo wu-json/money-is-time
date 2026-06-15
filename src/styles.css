@@ -255,6 +255,54 @@ body {
   text-decoration-color: currentColor;
 }
 
+/* Reset + privacy share a quiet footer under the inputs. */
+.controls-footer {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.controls-footer .controls-privacy {
+  margin: 0;
+}
+
+/* A restrained pill — the same muted register as the labels — that warms to a
+   terracotta warning once it's armed for the confirming second click. */
+.controls-reset {
+  align-self: flex-start;
+  padding: 0.5rem 0.95rem;
+  border: 1px solid var(--hairline-2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.controls-reset:hover {
+  color: var(--ink);
+  border-color: var(--muted);
+}
+
+.controls-reset:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.controls-reset.is-armed {
+  color: #a8432d;
+  border-color: #d8a99c;
+  background: #f6e9e4;
+}
+
 .field {
   display: flex;
   flex-direction: column;

@@ -2,6 +2,7 @@
 // schedule inputs into #controls and the goods-as-time catalog into #items.
 
 import { el } from "./dom";
+import { resetSettings } from "./state";
 import { salaryInput } from "./components/salaryInput";
 import { scheduleSelector } from "./components/scheduleSelector";
 import { itemsSection } from "./components/itemsSection";
@@ -19,9 +20,42 @@ function mountControls(): void {
 
   form.append(salaryInput(), el("hr", "control-divider"), scheduleSelector());
 
-  // A quiet reassurance for anyone wary of typing their salary in: nothing here
-  // is stored or sent — it's a static page that runs entirely in the browser.
-  // The claim links to the source so it can be verified, not just trusted.
+  // Reset is destructive of everything the user typed (salary, schedule, and the
+  // whole expense list), so it arms on the first click and only fires on the
+  // second — a two-tap confirm that needs no modal. It disarms itself after a few
+  // seconds or on blur, so a stray click can't wipe your numbers.
+  const reset = el("button", "controls-reset") as HTMLButtonElement;
+  reset.type = "button";
+  const RESET_LABEL = "Reset to defaults";
+  reset.textContent = RESET_LABEL;
+  let armed = false;
+  let armTimer = 0;
+  const disarm = () => {
+    armed = false;
+    reset.classList.remove("is-armed");
+    reset.textContent = RESET_LABEL;
+  };
+  reset.addEventListener("click", () => {
+    if (!armed) {
+      armed = true;
+      reset.classList.add("is-armed");
+      reset.textContent = "Click again to reset everything";
+      clearTimeout(armTimer);
+      armTimer = window.setTimeout(disarm, 3500);
+      return;
+    }
+    clearTimeout(armTimer);
+    disarm();
+    resetSettings();
+  });
+  reset.addEventListener("blur", () => {
+    clearTimeout(armTimer);
+    disarm();
+  });
+
+  // A quiet reassurance for anyone wary of typing their salary in: everything is
+  // kept locally in this browser and never sent anywhere. The claim links to the
+  // source so it can be verified, not just trusted.
   const source = el("a", "controls-privacy-link", "the source code") as HTMLAnchorElement;
   source.href = "https://github.com/wu-json/money-is-time";
   source.target = "_blank";
@@ -29,12 +63,12 @@ function mountControls(): void {
   const privacy = el(
     "p",
     "controls-privacy",
-    "Nothing you enter is saved or sent — it stays in your browser. Verify it in ",
+    "What you enter is saved in this browser only — never uploaded or sent anywhere. Verify it in ",
     source,
     ".",
   );
 
-  controls.append(form, privacy);
+  controls.append(form, el("div", "controls-footer", reset, privacy));
 }
 
 function mountItems(): void {
