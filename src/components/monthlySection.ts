@@ -131,6 +131,67 @@ export function monthlySection(): HTMLElement {
   rows.push(makeRow("Yours, free & clear", "the days you work for yourself", true));
   const legend = el("div", "donut-legend", ...rows.map((r) => r.node));
 
+  // --- The calendar: the same story laid on a month --------------------------
+  // Before the ring, we draw the month as days. The bills claim a grey run at the
+  // start; the freedom day is the deep-green turn; everything after is yours. The
+  // grid is exactly (billDays + daysYours) long, so it can never disagree with the
+  // ring's readout or the freedom day named in the lede.
+  const calGrid = el("div", "freedom-cal-grid");
+  calGrid.setAttribute("aria-hidden", "true");
+  const kBill = el("span", "cal-key-val");
+  const kDay = el("span", "cal-key-val");
+  const kFree = el("span", "cal-key-val");
+  const calKey = el(
+    "div",
+    "freedom-cal-key",
+    el("span", "cal-key", el("i", "cal-key-sw is-bill"), kBill),
+    el("span", "cal-key", el("i", "cal-key-sw is-freedom"), kDay),
+    el("span", "cal-key", el("i", "cal-key-sw is-free"), kFree),
+  );
+  const calendar = el("div", "freedom-cal", calGrid, calKey);
+
+  // Only rebuild when the shape actually changes — during a wage tween daysYours
+  // steps integer by integer, so the days fill in green a few times, not 37.
+  let calSig = "";
+  function renderCalendar(daysYours: number, freedomDay: number): void {
+    const billDays = Math.max(0, freedomDay - 1);
+    const yours = Math.max(0, daysYours);
+    const sig = `${billDays}:${yours}`;
+    if (sig === calSig) return;
+    calSig = sig;
+
+    calKey.style.display = "";
+    const total = billDays + yours;
+    const cells: HTMLElement[] = [];
+    for (let d = 1; d <= total; d++) {
+      const free = d >= freedomDay;
+      const mark = d === freedomDay && yours > 0;
+      cells.push(
+        el(
+          "div",
+          `cal-day${free ? " is-free" : " is-bill"}${mark ? " is-freedom" : ""}`,
+          el("span", "cal-day-num tabular", String(d)),
+        ),
+      );
+    }
+    calGrid.replaceChildren(...cells);
+
+    kBill.textContent = `Bills · ${billDays} ${billDays === 1 ? "day" : "days"}`;
+    kDay.textContent = yours > 0 ? `Freedom day · the ${ordinal(freedomDay)}` : "No freedom day";
+    kFree.textContent = `Yours · ${yours} ${yours === 1 ? "day" : "days"}`;
+  }
+
+  // The blank slate before any pay is entered: a quiet, neutral month.
+  function renderCalendarEmpty(): void {
+    calSig = "";
+    calKey.style.display = "none";
+    const cells: HTMLElement[] = [];
+    for (let d = 1; d <= 30; d++) {
+      cells.push(el("div", "cal-day is-empty", el("span", "cal-day-num tabular", String(d))));
+    }
+    calGrid.replaceChildren(...cells);
+  }
+
   // --- Reactive numbers ----------------------------------------------------
   // shown[i] = labor-minutes currently displayed for category i; we tween each
   // from where it sits toward its target on every wage change. Free time and the
@@ -180,12 +241,14 @@ export function monthlySection(): HTMLElement {
         r.val.textContent = "—";
         r.unit.textContent = "";
       }
+      renderCalendarEmpty();
       return;
     }
 
     const month = monthMinutes(hpw);
     const free = freeMinutes();
     const { daysYours, freedomDay } = freedom(free, month);
+    renderCalendar(daysYours, freedomDay);
 
     // Bills read in concrete hours of work — the price you pay in time.
     const setTime = (r: Row, minutes: number) => {
@@ -296,14 +359,21 @@ export function monthlySection(): HTMLElement {
       el("p", "items-eyebrow", "Where the month goes"),
       el("h2", "items-title", "How much of your month is yours?"),
       lede,
+    ),
+    calendar,
+    // The ring is the same month told a second way — hour by hour. The bridge line
+    // hands off from the calendar and carries the detail the note used to.
+    el(
+      "div",
+      "monthly-breakdown",
       el(
         "p",
-        "items-note",
-        "Your whole working month, drawn as a ring. The standing bill of a single person in " +
-          "San Francisco — typical, rounded — claims its wedges in hours. What stays open is yours, " +
-          "free & clear, and a raise makes it grow.",
+        "items-note monthly-bridge",
+        "The same month, now hour by hour. The standing bill of a single person in San " +
+          "Francisco — typical, rounded — claims each wedge in hours of work. What stays open " +
+          "is yours, free & clear, and a raise makes it grow.",
       ),
+      el("div", "donut-grid", figure, legend),
     ),
-    el("div", "donut-grid", figure, legend),
   );
 }
