@@ -171,9 +171,10 @@ export const PEOPLE: Person[] = [
   {
     id: "musk",
     name: "Elon Musk",
-    role: "Net worth gained in 2021",
-    // Bloomberg Billionaires Index: ~$121B added to his net worth over 2021.
-    annualUsd: 121_000_000_000,
+    role: "SpaceX stake at its 2026 IPO",
+    // June 2026 IPO: ~4.8B shares (~42%) at the $135 IPO price ≈ $648B,
+    // the wealth event that made him the world's first trillionaire.
+    annualUsd: 648_000_000_000,
     weeklyHours: 90,
     hoursBasis: "By his own account — 80–100 h/week",
     hoursSource: {
@@ -182,8 +183,8 @@ export const PEOPLE: Person[] = [
     },
     note: "Wealth, not wages — but it's the same clock.",
     source: {
-      label: "Bloomberg Billionaires Index",
-      url: "https://www.bloomberg.com/billionaires/profiles/elon-r-musk/",
+      label: "CBS — Musk becomes first trillionaire on SpaceX's IPO",
+      url: "https://www.cbsnews.com/news/elon-musk-spacex-ipo-trillionaire-wealth/",
     },
   },
 ];
