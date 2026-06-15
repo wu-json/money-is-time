@@ -11,7 +11,7 @@ import { el } from "../dom";
 import { effect } from "../store";
 import { tweenNumber } from "../tween";
 import { netHourlyWageUsd, schedule } from "../state";
-import { primaryTime, laborWeeks, money } from "../format";
+import { primaryTime, money } from "../format";
 import { MONTHLY_COSTS } from "../data/monthly";
 
 const reduceMotion = window.matchMedia(
@@ -33,9 +33,38 @@ function monthMinutes(hoursPerWeek: number): number {
   return hoursPerWeek > 0 ? ((hoursPerWeek * 52) / 12) * 60 : 0;
 }
 
+// Calendar days in an average month — the canvas the freedom-day story is told on.
+const DAYS_PER_MONTH = 365.25 / 12; // ≈ 30.44
+
+// "1st", "2nd", "3rd", "19th", "21st" — the freedom-day reads as a date, not a stat.
+function ordinal(n: number): string {
+  const v = n % 100;
+  const suffix =
+    v >= 11 && v <= 13
+      ? "th"
+      : ["th", "st", "nd", "rd"][n % 10] ?? "th";
+  return `${n}${suffix}`;
+}
+
+// The whole point, in one struct: map the bills' share of your *working* month onto
+// the calendar. `freedomDay` is the day you stop covering bills and start earning for
+// yourself; `daysYours` is how much of the month that leaves you. The fraction comes
+// from labor-time (dollars ÷ wage), spread evenly across the days.
+function freedom(freeMin: number, monthMin: number) {
+  const freeFrac = monthMin > 0 ? Math.max(0, Math.min(1, freeMin / monthMin)) : 0;
+  const daysYours = Math.round(freeFrac * DAYS_PER_MONTH);
+  const billDays = DAYS_PER_MONTH - freeFrac * DAYS_PER_MONTH;
+  const freedomDay = Math.min(31, Math.floor(billDays) + 1);
+  return { daysYours, freedomDay };
+}
+
 type Row = { node: HTMLButtonElement; val: HTMLElement; unit: HTMLElement };
 
 export function monthlySection(): HTMLElement {
+  // The dynamic punch line under the heading — rewritten on every wage change to
+  // name the day you stop working for the bills and start working for yourself.
+  const lede = el("p", "items-lede");
+
   // --- The figure: ring + the readout floating in its hole -----------------
   // A faint track shows the full month; colored wedges are drawn onto it each
   // frame, and the free wedge is a calm green that brightens when you ask for it.
@@ -99,7 +128,7 @@ export function monthlySection(): HTMLElement {
     rows[i].node.querySelector<HTMLElement>(".donut-swatch")!.style.background =
       c.color;
   });
-  rows.push(makeRow("Free & clear", "what's left after the bills", true));
+  rows.push(makeRow("Yours, free & clear", "the days you work for yourself", true));
   const legend = el("div", "donut-legend", ...rows.map((r) => r.node));
 
   // --- Reactive numbers ----------------------------------------------------
@@ -146,6 +175,7 @@ export function monthlySection(): HTMLElement {
       centerUnit.textContent = "";
       centerCap.textContent = "free & clear";
       share.classList.add("is-hidden");
+      lede.textContent = "Add your pay and hours to see where the month goes.";
       for (const r of rows) {
         r.val.textContent = "—";
         r.unit.textContent = "";
@@ -155,35 +185,52 @@ export function monthlySection(): HTMLElement {
 
     const month = monthMinutes(hpw);
     const free = freeMinutes();
+    const { daysYours, freedomDay } = freedom(free, month);
 
-    // Bills read in concrete hours; free time is the payoff, so it reads in the
-    // user's work-weeks (a far more graspable "162 hours → 4 work weeks") — until
-    // it's under a week, where raw hours tell the story better.
-    const freeWeeks = free / 60 / hpw;
-    const readout = (minutes: number, asWeeks: boolean) =>
-      asWeeks && freeWeeks >= 1 ? laborWeeks(minutes, hpw) : primaryTime(minutes);
-
-    const setTime = (r: Row, minutes: number, asWeeks = false) => {
-      const p = readout(minutes, asWeeks);
+    // Bills read in concrete hours of work — the price you pay in time.
+    const setTime = (r: Row, minutes: number) => {
+      const p = primaryTime(minutes);
       r.val.textContent = p.value;
       r.unit.textContent = ` ${p.unit}`;
     };
     for (let i = 0; i < N; i++) setTime(rows[i], shown[i]);
-    setTime(rows[FREE_I], free, true);
+    // The free row is the payoff, so it reads in days of the month that are yours.
+    rows[FREE_I].val.textContent = String(daysYours);
+    rows[FREE_I].unit.textContent = daysYours === 1 ? " day" : " days";
+
+    // The lede tracks the free total (not the hovered wedge), so it stays put as you
+    // explore the ring and only moves when your pay does.
+    lede.textContent =
+      daysYours <= 0
+        ? "The bills eat the whole month — there's nothing left over."
+        : freedomDay <= 1
+          ? "The bills barely dent your month — almost all of it is yours."
+          : `You work until the ${ordinal(freedomDay)} just to cover the bills — then you're working for yourself.`;
 
     const idx = hover ?? FREE_I;
-    const isFree = idx === FREE_I;
-    const minutes = isFree ? free : shown[idx];
-    const p = readout(minutes, isFree);
-    centerVal.textContent = p.value;
-    centerUnit.textContent = ` ${p.unit}`;
-    centerCap.textContent =
-      idx === FREE_I ? "free & clear" : MONTHLY_COSTS[idx].name;
-
-    const sharePct = month > 0 ? Math.round((minutes / month) * 100) : 0;
-    share.classList.remove("is-hidden");
-    shareVal.textContent = `${sharePct}%`;
-    shareUnit.textContent = "of your month";
+    if (idx === FREE_I) {
+      // The payoff: how much of the month is yours, and the day you cross into it.
+      centerVal.textContent = String(daysYours);
+      centerUnit.textContent = daysYours === 1 ? " day" : " days";
+      centerCap.textContent = "are yours";
+      share.classList.remove("is-hidden");
+      if (daysYours > 0 && freedomDay > 1) {
+        shareVal.textContent = ordinal(freedomDay);
+        shareUnit.textContent = "onward";
+      } else {
+        share.classList.add("is-hidden");
+      }
+    } else {
+      // A bill: what it costs you in hours, and its share of the working month.
+      const p = primaryTime(shown[idx]);
+      centerVal.textContent = p.value;
+      centerUnit.textContent = ` ${p.unit}`;
+      centerCap.textContent = MONTHLY_COSTS[idx].name;
+      const sharePct = month > 0 ? Math.round((shown[idx] / month) * 100) : 0;
+      share.classList.remove("is-hidden");
+      shareVal.textContent = `${sharePct}%`;
+      shareUnit.textContent = "of your month";
+    }
   }
 
   // Highlight one wedge + its legend row (or clear, with null) and refocus the
@@ -248,12 +295,13 @@ export function monthlySection(): HTMLElement {
       "items-intro",
       el("p", "items-eyebrow", "Where the month goes"),
       el("h2", "items-title", "How much of your month is yours?"),
+      lede,
       el(
         "p",
         "items-note",
         "Your whole working month, drawn as a ring. The standing bill of a single person in " +
-          "San Francisco — typical, rounded — claims its wedges in hours. What stays open is free " +
-          "& clear, and a raise makes it grow.",
+          "San Francisco — typical, rounded — claims its wedges in hours. What stays open is yours, " +
+          "free & clear, and a raise makes it grow.",
       ),
     ),
     el("div", "donut-grid", figure, legend),
