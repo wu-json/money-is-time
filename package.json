@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun ./index.html",
-    "build": "rm -rf dist && bun build ./index.html --outdir dist --minify"
+    "build": "rm -rf dist && bun build ./index.html --outdir dist --minify && cp docs/screenshots/money-is-time.png dist/og-image.png"
   },
   "devDependencies": {
     "@types/bun": "latest",
