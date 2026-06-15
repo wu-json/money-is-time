@@ -4,6 +4,7 @@
 
 import { signal, computed, type Signal, type ReadSignal } from "./store";
 import { hourlyWage, federalIncomeTax, californiaIncomeTax } from "./calc";
+import { DEFAULT_MONTHLY_COSTS, type MonthlyCost } from "./data/monthly";
 
 export type PresetId = "9to5" | "996" | "9127" | "custom";
 
@@ -19,6 +20,21 @@ export const schedule: Signal<Schedule> = signal<Schedule>({
   hoursPerWeek: 40,
   presetId: "9to5",
 });
+
+// The user's monthly bills, seeded from the defaults but fully theirs to edit:
+// rename, re-price, add lines, drop what doesn't fit. The monthly ring reads this
+// live, so the freedom-day calendar below reshapes as the list changes. Copied so
+// the defaults stay a pristine reset point.
+export const monthlyCosts: Signal<MonthlyCost[]> = signal<MonthlyCost[]>(
+  DEFAULT_MONTHLY_COSTS.map((c) => ({ ...c })),
+);
+
+// Mint a stable id for a freshly added expense — monotonic so it never collides
+// with a default id or a still-living custom one.
+let customCostSeq = 0;
+export function newCostId(): string {
+  return `custom-${++customCostSeq}`;
+}
 
 // Gross rate — dollars earned per hour worked, before tax. The tax card reads
 // this (time worked *to pay* taxes is measured against gross pay).

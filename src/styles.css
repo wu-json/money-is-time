@@ -1220,6 +1220,165 @@ body {
   color: var(--muted);
 }
 
+/* Editable rows: the name and amount are fields, not labels. They sit flush and
+   borderless so the legend still reads as a quiet list, and only hint at being
+   editable — a hairline underline on hover, the accent on focus. */
+.donut-row.is-editable {
+  cursor: default;
+}
+
+.donut-row-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.donut-row-name-input,
+.donut-row-amount-input {
+  font-family: var(--font-sans);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  border-radius: 0;
+  padding: 1px 0;
+  color: var(--ink);
+  transition: border-color var(--dur) var(--ease);
+}
+
+.donut-row-name-input {
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  width: 100%;
+  min-width: 0;
+}
+
+.donut-row-amount {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 1px;
+  color: var(--muted);
+}
+
+.donut-amount-prefix {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.donut-row-amount-input {
+  font-size: 0.74rem;
+  font-weight: 500;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  width: 8ch;
+}
+
+.donut-row:hover .donut-row-name-input,
+.donut-row:hover .donut-row-amount-input {
+  border-bottom-color: var(--hairline);
+}
+
+.donut-row-name-input:focus,
+.donut-row-amount-input:focus {
+  outline: 0;
+  border-bottom-color: var(--accent);
+}
+
+.donut-row-name-input::placeholder,
+.donut-row-amount-input::placeholder {
+  color: var(--muted);
+  opacity: 0.7;
+}
+
+/* Remove control — stays out of the way until you hover or focus the row. */
+.donut-row-remove {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0;
+  transition:
+    opacity var(--dur) var(--ease),
+    background var(--dur) var(--ease),
+    color var(--dur) var(--ease);
+}
+
+.donut-row-remove svg {
+  width: 14px;
+  height: 14px;
+}
+
+.donut-row:hover .donut-row-remove,
+.donut-row:focus-within .donut-row-remove {
+  opacity: 1;
+}
+
+.donut-row-remove:hover {
+  background: var(--sink);
+  color: var(--ink);
+}
+
+.donut-row-remove:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+  opacity: 1;
+}
+
+/* Add a line — a quiet accent affordance under the list, above the payoff row. */
+.donut-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  align-self: flex-start;
+  margin: 0.5rem 0 0.1rem;
+  padding: 0.5rem 0.4rem;
+  background: transparent;
+  border: 0;
+  border-radius: 8px;
+  font-family: var(--font-sans);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease);
+}
+
+.donut-add:hover {
+  background: var(--sink);
+}
+
+.donut-add:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.donut-add-icon {
+  display: inline-flex;
+}
+
+.donut-add-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* The calendar's lead-in sits tight above the grid, like the ring's bridge line. */
+.freedom-cal-note {
+  margin: 0 auto;
+  max-width: 52ch;
+  text-align: center;
+}
+
 /* The month as a calendar — the freedom-day story before the ring. A grey run of
    bill days, the deep-green freedom day, then the pale-green days that are yours. */
 .freedom-cal {
@@ -1324,6 +1483,11 @@ body {
 
   .donut-figure {
     max-width: 280px;
+  }
+
+  /* No hover on touch, so the remove control has to be reachable outright. */
+  .donut-row-remove {
+    opacity: 0.55;
   }
 }
 
