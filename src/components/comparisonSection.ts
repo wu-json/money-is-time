@@ -39,7 +39,7 @@ function timeReadout(hours: number, hoursPerWeek: number): Primary {
   return weeks >= 1 ? laborWeeks(minutes, hoursPerWeek) : primaryTime(minutes);
 }
 
-const DEFAULT_ID = "lebron";
+const DEFAULT_ID = "ceo";
 
 export function comparisonSection(): HTMLElement {
   // --- Selector ------------------------------------------------------------

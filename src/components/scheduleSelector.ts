@@ -27,9 +27,9 @@ const MOON =
   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
 
 const PRESETS: Preset[] = [
-  { id: "9to5", label: "Clock-Puncher", blurb: "9 to 5 · 40h", icon: CLOCK, hoursPerWeek: 40 },
-  { id: "996", label: "Rise & Grind", blurb: "996 · 72h", icon: SUNRISE, hoursPerWeek: 72 },
-  { id: "9127", label: "Founder Mode", blurb: "9 to 1am · 112h", icon: MOON, hoursPerWeek: 112 },
+  { id: "9to5", label: "Clock-Puncher", blurb: "9 to 5 · 40h/week", icon: CLOCK, hoursPerWeek: 40 },
+  { id: "996", label: "Rise & Grind", blurb: "996 · 72h/week", icon: SUNRISE, hoursPerWeek: 72 },
+  { id: "9127", label: "Founder Mode", blurb: "9 to 1am · 112h/week", icon: MOON, hoursPerWeek: 112 },
 ];
 
 const HOURS_IN_WEEK = 168;
