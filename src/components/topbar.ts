@@ -1,14 +1,9 @@
-// A small cluster of links pinned to the top-right of the page: upvote on
-// Hacker News, view the source on GitHub, and read the blog post. Built to sit
-// quietly in the same ink-on-paper palette as the rest of the sheet — paper
-// pills, hairline borders, no color until you hover.
+// A small cluster of links pinned to the top-right of the page: view the
+// source on GitHub and read the blog post. Built to sit quietly in the same
+// ink-on-paper palette as the rest of the sheet — paper pills, hairline
+// borders, no color until you hover.
 
 import { el } from "../dom";
-
-// HN-style upvote caret — the same triangle used as the upvote affordance on
-// news.ycombinator.com, drawn into a 24×24 viewBox to match the other icons.
-const ICON_UPVOTE =
-  '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 5 3 18h18z"/></svg>';
 
 // GitHub mark — the standard Octicons silhouette in a 24×24 viewBox.
 const ICON_GITHUB =
@@ -39,17 +34,10 @@ function link(
 }
 
 export function topbar(): HTMLElement {
-  // TODO: swap these placeholder URLs once the HN submission and blog post land.
+  // TODO: swap this placeholder URL once the blog post lands.
   return el(
     "nav",
     "topbar",
-    link(
-      "topbar-hn",
-      "https://news.ycombinator.com/",
-      "Upvote on Hacker News",
-      ICON_UPVOTE,
-      "upvote on HN",
-    ),
     link(
       "topbar-gh",
       "https://github.com/wu-json/money-is-time",
